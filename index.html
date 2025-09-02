@@ -3,125 +3,739 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>温泉旅館ARナビゲーション</title>
+    <title>温泉旅館ARナビゲーション - 最新AR案内システム</title>
+    <meta name="description" content="最新のAR技術で温泉旅館を迷わずご案内。多言語対応、アプリ不要で簡単操作。">
+    <meta name="keywords" content="温泉旅館,ARナビ,道案内,多言語対応">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="ar-system.html" as="document">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="温泉旅館ARナビ">
+    
     <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
+        /* CSS Variables for Design System */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warm-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-accent: #4facfe;
+            
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --spacing-xxl: 4rem;
+            
+            --radius-sm: 0.5rem;
+            --radius-md: 1rem;
+            --radius-lg: 1.5rem;
+            --radius-xl: 2rem;
+            
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            --font-japanese: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+            
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --glass-bg: rgba(0, 0, 0, 0.2);
+                --glass-border: rgba(255, 255, 255, 0.1);
+            }
+        }
+        
+        /* Reset and Base Styles */
+        * {
             margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            height: 100%;
+        }
+        
+        body {
+            font-family: var(--font-japanese);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: backgroundMove 20s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+        
+        @keyframes backgroundMove {
+            0% { transform: scale(1) rotate(0deg); }
+            100% { transform: scale(1.1) rotate(5deg); }
+        }
+        
+        /* Glass Container */
+        .container {
+            position: relative;
+            text-align: center;
+            max-width: min(90vw, 600px);
+            margin: 0 auto;
+            padding: var(--spacing-xl);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            gap: var(--spacing-lg);
         }
         
-        .container {
-            text-align: center;
-            max-width: 600px;
-            padding: 30px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--glass-shadow);
+            padding: var(--spacing-xl);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
         }
         
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        }
+        
+        /* Typography */
+        .main-title {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
         }
         
         .subtitle {
-            font-size: 1.2em;
-            margin-bottom: 30px;
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            font-weight: 400;
+            margin-bottom: var(--spacing-xl);
             opacity: 0.9;
+            line-height: 1.5;
+            font-family: var(--font-japanese);
+        }
+        
+        .emoji-icon {
+            display: inline-block;
+            font-size: 1.2em;
+            margin-right: var(--spacing-xs);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        /* CTA Button */
+        .cta-section {
+            margin: var(--spacing-lg) 0;
         }
         
         .start-button {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            background: var(--secondary-gradient);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.3em;
+            padding: var(--spacing-md) var(--spacing-xl);
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+            font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255,107,107,0.3);
-            margin: 10px;
+            transition: all var(--transition-smooth);
+            box-shadow: 
+                0 4px 15px rgba(245, 87, 108, 0.4),
+                0 0 20px rgba(240, 147, 251, 0.2);
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-family: var(--font-japanese);
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+            justify-content: center;
+        }
+        
+        .start-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left var(--transition-slow);
+        }
+        
+        .start-button:hover::before {
+            left: 100%;
         }
         
         .start-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255,107,107,0.4);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 8px 25px rgba(245, 87, 108, 0.5),
+                0 0 30px rgba(240, 147, 251, 0.3);
         }
         
+        .start-button:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        
+        /* Features Grid */
         .features {
-            margin-top: 30px;
-            text-align: left;
+            margin-top: var(--spacing-xl);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+            width: 100%;
         }
         
         .feature {
-            margin: 15px 0;
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            transition: all var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--accent-gradient);
+            transform: scaleX(0);
+            transition: transform var(--transition-smooth);
+        }
+        
+        .feature:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-content {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-sm);
+            text-align: left;
         }
         
         .feature-icon {
-            display: inline-block;
-            width: 20px;
-            margin-right: 10px;
+            font-size: 1.5rem;
+            min-width: 2rem;
+            margin-top: 0.2rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
         }
         
-        .qr-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            font-size: 0.9em;
+        .feature-text {
+            flex: 1;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-primary);
+            font-family: var(--font-japanese);
+        }
+        
+        .feature-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.4;
+            font-family: var(--font-japanese);
+        }
+        
+        /* Info Panel */
+        .info-panel {
+            margin-top: var(--spacing-xl);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            position: relative;
+        }
+        
+        .info-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-accent);
+        }
+        
+        .info-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            font-family: var(--font-japanese);
+        }
+        
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            display: flex;
+            gap: var(--spacing-xs);
+            z-index: 1000;
+        }
+        
+        .lang-btn {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .lang-btn.active {
+            background: var(--accent-gradient);
+            color: white;
+        }
+        
+        /* Loading Animation */
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+            margin-left: var(--spacing-sm);
+        }
+        
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: loadingDots 1.4s ease-in-out infinite both;
+        }
+        
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes loadingDots {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-lg) var(--spacing-md);
+                gap: var(--spacing-md);
+            }
+            
+            .glass-card {
+                padding: var(--spacing-lg);
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-sm);
+            }
+            
+            .language-switcher {
+                top: var(--spacing-sm);
+                right: var(--spacing-sm);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-md) var(--spacing-sm);
+            }
+            
+            .glass-card {
+                padding: var(--spacing-md);
+            }
+            
+            .start-button {
+                padding: var(--spacing-sm) var(--spacing-lg);
+                min-width: 180px;
+            }
+        }
+        
+        /* High DPI Display Support */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .main-title {
+                -webkit-font-smoothing: antialiased;
+            }
+        }
+        
+        /* Reduce Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .start-button:hover {
+                transform: none;
+            }
+            
+            .feature:hover {
+                transform: none;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            
+            .glass-card {
+                background: white !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+            
+            .language-switcher {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="lang-btn active" onclick="setLanguage('ja')" aria-label="日本語">JA</button>
+        <button class="lang-btn" onclick="setLanguage('en')" aria-label="English">EN</button>
+        <button class="lang-btn" onclick="setLanguage('zh')" aria-label="中文">中</button>
+        <button class="lang-btn" onclick="setLanguage('ko')" aria-label="한국어">한</button>
+    </div>
+
     <div class="container">
-        <h1>🏨 館内ARナビ</h1>
-        <div class="subtitle">迷わず目的地へご案内</div>
-        
-        <a href="ar-system.html" class="start-button">
-            🧭 ARナビを開始
-        </a>
-        
-        <div class="features">
-            <div class="feature">
-                <span class="feature-icon">📱</span>
-                スマホをかざすだけで道案内
+        <div class="glass-card">
+            <h1 class="main-title">
+                <span class="emoji-icon">🏨</span>
+                <span id="main-title-text">館内ARナビ</span>
+            </h1>
+            
+            <p class="subtitle" id="subtitle-text">
+                最新のAR技術で、迷わず目的地へご案内
+            </p>
+            
+            <div class="cta-section">
+                <a href="ar-system.html" class="start-button" id="start-button">
+                    <span class="emoji-icon">🧭</span>
+                    <span id="start-button-text">ARナビを開始</span>
+                    <div class="loading-dots" style="display: none;">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </a>
             </div>
-            <div class="feature">
-                <span class="feature-icon">🗣️</span>
-                音声案内（日本語・英語・中国語・韓国語）
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-content">
+                        <span class="feature-icon">📱</span>
+                        <div class="feature-text">
+                            <div class="feature-title" data-translate="feature-ar-title">ARで道案内</div>
+                            <div class="feature-description" data-translate="feature-ar-desc">
+                                スマホをかざすだけで、画面に矢印と距離が表示されます
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-content">
+                        <span class="feature-icon">🗣️</span>
+                        <div class="feature-text">
+                            <div class="feature-title" data-translate="feature-voice-title">多言語音声案内</div>
+                            <div class="feature-description" data-translate="feature-voice-desc">
+                                日本語・英語・中国語・韓国語での音声案内に対応
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-content">
+                        <span class="feature-icon">🎯</span>
+                        <div class="feature-text">
+                            <div class="feature-title" data-translate="feature-precision-title">高精度位置検出</div>
+                            <div class="feature-description" data-translate="feature-precision-desc">
+                                複数センサーを組み合わせた高精度な位置検出システム
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-content">
+                        <span class="feature-icon">📶</span>
+                        <div class="feature-text">
+                            <div class="feature-title" data-translate="feature-easy-title">アプリ不要</div>
+                            <div class="feature-description" data-translate="feature-easy-desc">
+                                ブラウザで動作、インストール不要で即座に利用開始
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-content">
+                        <span class="feature-icon">♿</span>
+                        <div class="feature-text">
+                            <div class="feature-title" data-translate="feature-accessible-title">アクセシブル設計</div>
+                            <div class="feature-description" data-translate="feature-accessible-desc">
+                                高齢者・障がい者の方にも使いやすいユニバーサルデザイン
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-content">
+                        <span class="feature-icon">🔄</span>
+                        <div class="feature-text">
+                            <div class="feature-title" data-translate="feature-realtime-title">リアルタイム更新</div>
+                            <div class="feature-description" data-translate="feature-realtime-desc">
+                                位置情報と案内内容がリアルタイムで自動更新
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="feature">
-                <span class="feature-icon">🎯</span>
-                高精度位置検出システム
+            
+            <div class="info-panel">
+                <div class="info-title">
+                    <span class="emoji-icon">💡</span>
+                    <span data-translate="info-title">ご利用方法</span>
+                </div>
+                <div class="info-content" data-translate="info-content">
+                    各階・各エリアのQRコードをスマホで読み取ると、自動的にARナビゲーションが開始されます。目的地を選択するだけで、音声と画面表示で迷わずご案内いたします。
+                </div>
             </div>
-            <div class="feature">
-                <span class="feature-icon">📶</span>
-                アプリ不要・ブラウザで動作
-            </div>
-        </div>
-        
-        <div class="qr-info">
-            💡 各階・各エリアのQRコードからも直接アクセス可能
         </div>
     </div>
-    
+
     <script>
-        // サービスワーカー登録（オフライン対応）
+        // 多言語対応システム
+        const translations = {
+            'ja': {
+                'main-title': '館内ARナビ',
+                'subtitle': '最新のAR技術で、迷わず目的地へご案内',
+                'start-button': 'ARナビを開始',
+                'feature-ar-title': 'ARで道案内',
+                'feature-ar-desc': 'スマホをかざすだけで、画面に矢印と距離が表示されます',
+                'feature-voice-title': '多言語音声案内',
+                'feature-voice-desc': '日本語・英語・中国語・韓国語での音声案内に対応',
+                'feature-precision-title': '高精度位置検出',
+                'feature-precision-desc': '複数センサーを組み合わせた高精度な位置検出システム',
+                'feature-easy-title': 'アプリ不要',
+                'feature-easy-desc': 'ブラウザで動作、インストール不要で即座に利用開始',
+                'feature-accessible-title': 'アクセシブル設計',
+                'feature-accessible-desc': '高齢者・障がい者の方にも使いやすいユニバーサルデザイン',
+                'feature-realtime-title': 'リアルタイム更新',
+                'feature-realtime-desc': '位置情報と案内内容がリアルタイムで自動更新',
+                'info-title': 'ご利用方法',
+                'info-content': '各階・各エリアのQRコードをスマホで読み取ると、自動的にARナビゲーションが開始されます。目的地を選択するだけで、音声と画面表示で迷わずご案内いたします。'
+            },
+            'en': {
+                'main-title': 'AR Navigation',
+                'subtitle': 'Navigate to your destination with cutting-edge AR technology',
+                'start-button': 'Start AR Navigation',
+                'feature-ar-title': 'AR Guidance',
+                'feature-ar-desc': 'Simply point your phone to see arrows and distance on screen',
+                'feature-voice-title': 'Multi-language Voice',
+                'feature-voice-desc': 'Voice guidance in Japanese, English, Chinese, and Korean',
+                'feature-precision-title': 'High-precision Location',
+                'feature-precision-desc': 'Advanced positioning system using multiple sensors',
+                'feature-easy-title': 'No App Required',
+                'feature-easy-desc': 'Works in browser, no installation needed for instant use',
+                'feature-accessible-title': 'Accessible Design',
+                'feature-accessible-desc': 'Universal design friendly for elderly and disabled users',
+                'feature-realtime-title': 'Real-time Updates',
+                'feature-realtime-desc': 'Location and guidance information updates automatically',
+                'info-title': 'How to Use',
+                'info-content': 'Scan QR codes on each floor with your smartphone to automatically start AR navigation. Simply select your destination for voice and visual guidance.'
+            },
+            'zh': {
+                'main-title': 'AR导航',
+                'subtitle': '使用最新AR技术，为您提供精准的路线指引',
+                'start-button': '开始AR导航',
+                'feature-ar-title': 'AR路线指引',
+                'feature-ar-desc': '只需举起手机，屏幕上即显示箭头和距离信息',
+                'feature-voice-title': '多语言语音导航',
+                'feature-voice-desc': '支持日语、英语、中文、韩语语音导航',
+                'feature-precision-title': '高精度定位',
+                'feature-precision-desc': '结合多种传感器的高精度定位系统',
+                'feature-easy-title': '无需下载应用',
+                'feature-easy-desc': '浏览器直接运行，无需安装即可立即使用',
+                'feature-accessible-title': '无障碍设计',
+                'feature-accessible-desc': '为老年人和残障人士设计的通用友好界面',
+                'feature-realtime-title': '实时更新',
+                'feature-realtime-desc': '位置信息和导航内容实时自动更新',
+                'info-title': '使用方法',
+                'info-content': '用智能手机扫描各楼层的二维码，即可自动启动AR导航。只需选择目的地，即可获得语音和视觉引导。'
+            },
+            'ko': {
+                'main-title': 'AR 내비게이션',
+                'subtitle': '최신 AR 기술로 목적지까지 정확하게 안내',
+                'start-button': 'AR 내비 시작',
+                'feature-ar-title': 'AR 길안내',
+                'feature-ar-desc': '스마트폰을 들기만 하면 화면에 화살표와 거리가 표시됩니다',
+                'feature-voice-title': '다국어 음성안내',
+                'feature-voice-desc': '일본어, 영어, 중국어, 한국어 음성안내 지원',
+                'feature-precision-title': '고정밀 위치검출',
+                'feature-precision-desc': '여러 센서를 결합한 고정밀 위치검출 시스템',
+                'feature-easy-title': '앱 불필요',
+                'feature-easy-desc': '브라우저에서 동작, 설치없이 바로 이용 가능',
+                'feature-accessible-title': '접근성 설계',
+                'feature-accessible-desc': '고령자・장애인 분들도 사용하기 쉬운 유니버설 디자인',
+                'feature-realtime-title': '실시간 업데이트',
+                'feature-realtime-desc': '위치정보와 안내내용이 실시간으로 자동 업데이트',
+                'info-title': '이용방법',
+                'info-content': '각 층・각 구역의 QR코드를 스마트폰으로 읽으면 자동으로 AR 내비게이션이 시작됩니다. 목적지를 선택하기만 하면 음성과 화면표시로 길을 안내합니다.'
+            }
+        };
+
+        let currentLanguage = 'ja';
+
+        // 언어 설정
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            
+            // 언어 버튼 활성화 상태 업데이트
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 텍스트 업데이트
+            updateTexts();
+            
+            // 로컬스토리지에 저장
+            localStorage.setItem('preferred-language', lang);
+        }
+
+        // 텍스트 업데이트
+        function updateTexts() {
+            const langData = translations[currentLanguage];
+            
+            // ID로 직접 업데이트
+            const titleElement = document.getElementById('main-title-text');
+            const subtitleElement = document.getElementById('subtitle-text');
+            const startButtonElement = document.getElementById('start-button-text');
+            
+            if (titleElement) titleElement.textContent = langData['main-title'];
+            if (subtitleElement) subtitleElement.textContent = langData['subtitle'];
+            if (startButtonElement) startButtonElement.textContent = langData['start-button'];
+            
+            // data-translate 속성으로 업데이트
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (langData[key]) {
+                    element.textContent = langData[key];
+                }
+            });
+        }
+
+        // 버튼 클릭 효과
+        function handleStartClick(event) {
+            const button = event.currentTarget;
+            const loadingDots = button.querySelector('.loading-dots');
+            const buttonText = button.querySelector('#start-button-text');
+            
+            // 로딩 애니메이션 표시
+            if (loadingDots) {
+                loadingDots.style.display = 'inline-flex';
+            }
+            
+            // 잠시 후 페이지 이동 (실제로는 href로 이동됨)
+            setTimeout(() => {
+                if (loadingDots) {
+                    loadingDots.style.display = 'none';
+                }
+            }, 2000);
+        }
+
+        // Service Worker 등록
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js')
@@ -133,6 +747,60 @@
                     });
             });
         }
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 저장된 언어 설정 복원
+            const savedLang = localStorage.getItem('preferred-language');
+            if (savedLang && translations[savedLang]) {
+                // 해당 언어 버튼 찾아서 클릭
+                const langButton = document.querySelector(`.lang-btn[onclick*="${savedLang}"]`);
+                if (langButton) {
+                    langButton.click();
+                }
+            }
+            
+            // 시작 버튼에 클릭 이벤트 추가
+            const startButton = document.getElementById('start-button');
+            if (startButton) {
+                startButton.addEventListener('click', handleStartClick);
+            }
+            
+            // PWA 설치 프롬프트
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                // PWA 설치 버튼 표시 로직 (필요시)
+            });
+        });
+
+        // 키보드 네비게이션 지원
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                if (e.target.classList.contains('start-button')) {
+                    e.preventDefault();
+                    e.target.click();
+                }
+            }
+        });
+
+        // 접근성: 포커스 표시 개선
+        document.addEventListener('DOMContentLoaded', function() {
+            // 포커스 가능한 요소들에 포커스 스타일 추가
+            const focusableElements = document.querySelectorAll('button, a, [tabindex]');
+            focusableElements.forEach(element => {
+                element.addEventListener('focus', function() {
+                    this.style.outline = '2px solid #4facfe';
+                    this.style.outlineOffset = '2px';
+                });
+                
+                element.addEventListener('blur', function() {
+                    this.style.outline = '';
+                    this.style.outlineOffset = '';
+                });
+            });
+        });
     </script>
 </body>
 </html>
