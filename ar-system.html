@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>温泉旅館ARナビゲーション</title>
     
-    <!-- AR.js -->
+    <!-- AR.js 最適化版 -->
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.min.js"></script>
     
@@ -29,9 +29,7 @@
             position: relative;
         }
 
-        /* =================================
-           メイン画面制御
-        ================================= */
+        /* メイン画面制御 */
         .screen {
             position: fixed !important;
             top: 0 !important;
@@ -53,9 +51,7 @@
             opacity: 1 !important;
         }
 
-        /* =================================
-           初期化画面
-        ================================= */
+        /* 初期化画面 */
         #loading-screen {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -91,9 +87,7 @@
             min-height: 1.5rem;
         }
 
-        /* =================================
-           目的地選択画面
-        ================================= */
+        /* 目的地選択画面 */
         #destination-screen {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
             color: white !important;
@@ -176,9 +170,7 @@
             line-height: 1.3 !important;
         }
 
-        /* =================================
-           AR画面（完全修正版）
-        ================================= */
+        /* AR画面（最終完成版） */
         #ar-screen {
             background: black !important;
             position: fixed !important;
@@ -188,7 +180,7 @@
             height: 100vh !important;
         }
 
-        /* AR.jsシーン完全表示保証 */
+        /* AR.jsシーン最終設定 */
         a-scene {
             position: fixed !important;
             top: 0 !important;
@@ -199,6 +191,17 @@
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
+        }
+
+        /* video要素確実表示 */
+        a-scene video {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            object-fit: cover !important;
+            z-index: 1 !important;
         }
 
         /* ARオーバーレイUI */
@@ -252,56 +255,21 @@
             transform: scale(1.05) !important;
         }
 
-        /* =================================
-           カメラ権限要求画面
-        ================================= */
-        .camera-permission-overlay {
+        /* カメラ初期化メッセージ */
+        .camera-loading {
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            background: rgba(0, 0, 0, 0.9) !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            background: rgba(0, 0, 0, 0.8) !important;
             color: white !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
-            z-index: 9999 !important;
-            text-align: center !important;
             padding: 2rem !important;
+            border-radius: 10px !important;
+            text-align: center !important;
+            z-index: 9999 !important;
         }
 
-        .camera-permission-content h3 {
-            font-size: 1.5rem !important;
-            margin-bottom: 1rem !important;
-        }
-
-        .camera-permission-content p {
-            font-size: 1rem !important;
-            margin-bottom: 2rem !important;
-            line-height: 1.5 !important;
-        }
-
-        .permission-button {
-            background: #4CAF50 !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 25px !important;
-            padding: 12px 24px !important;
-            font-size: 1rem !important;
-            cursor: pointer !important;
-            transition: all 0.3s ease !important;
-        }
-
-        .permission-button:hover {
-            background: #45a049 !important;
-            transform: scale(1.05) !important;
-        }
-
-        /* =================================
-           デバッグパネル
-        ================================= */
+        /* デバッグパネル強化版 */
         .debug-panel {
             position: fixed !important;
             bottom: 10px !important;
@@ -365,9 +333,7 @@
             50% { opacity: 0.5; }
         }
 
-        /* =================================
-           アニメーション効果
-        ================================= */
+        /* アニメーション効果 */
         .fade-in {
             animation: fadeIn 0.5s ease-in !important;
         }
@@ -386,9 +352,7 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* =================================
-           モバイル専用調整
-        ================================= */
+        /* モバイル専用調整 */
         @media (max-width: 768px) {
             .destination-content h2 {
                 font-size: 1.4rem !important;
@@ -428,9 +392,7 @@
     </style>
 </head>
 <body>
-    <!-- =================================
-         初期化画面
-    ================================= -->
+    <!-- 初期化画面 -->
     <div id="loading-screen" class="screen active">
         <div class="loading-content">
             <h1>🏨 温泉旅館ARナビ</h1>
@@ -439,9 +401,7 @@
         </div>
     </div>
 
-    <!-- =================================
-         目的地選択画面
-    ================================= -->
+    <!-- 目的地選択画面 -->
     <div id="destination-screen" class="screen">
         <div class="destination-content">
             <h2>🎯 目的地を選択してください</h2>
@@ -449,14 +409,12 @@
         </div>
     </div>
 
-    <!-- =================================
-         AR画面
-    ================================= -->
+    <!-- AR画面（最終完成版） -->
     <div id="ar-screen" class="screen">
         <a-scene 
             id="ar-scene"
             embedded 
-            arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+            arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; trackingMethod: best; maxDetectionRate: 60; canvasWidth: 640; canvasHeight: 480;"
             vr-mode-ui="enabled: false"
             device-orientation-permission-ui="enabled: false"
             renderer="antialias: true; alpha: true; precision: medium;"
@@ -490,18 +448,14 @@
         </div>
     </div>
 
-    <!-- =================================
-         デバッグパネル
-    ================================= -->
+    <!-- デバッグパネル -->
     <div class="debug-panel" id="debug-panel">
         <h4>🔧 システム状態</h4>
         <div id="debug-content"></div>
     </div>
 
     <script>
-        // =================================
         // グローバル変数
-        // =================================
         let currentScreen = 'loading';
         let selectedDestination = null;
         let userPosition = null;
@@ -509,6 +463,7 @@
         let isARActive = false;
         let destinationCardsCount = 0;
         let cameraStream = null;
+        let videoElement = null;
         
         let debugInfo = {
             initialization: 'pending',
@@ -517,7 +472,8 @@
             ar: 'pending',
             gps: 'pending',
             cards: 'pending',
-            camera: 'pending'
+            camera: 'pending',
+            video: 'pending'
         };
 
         const destinations = [
@@ -565,9 +521,7 @@
             }
         ];
 
-        // =================================
         // 初期化処理
-        // =================================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 ARナビゲーションシステム起動');
             updateDebugInfo();
@@ -727,9 +681,7 @@
             return card;
         }
 
-        // =================================
         // 画面切り替え制御
-        // =================================
         function switchScreen(screenName) {
             console.log(`🔄 画面切り替え: ${currentScreen} → ${screenName}`);
             
@@ -760,9 +712,7 @@
             console.log(`✅ 画面切り替え完了: ${screenName}`);
         }
 
-        // =================================
         // 目的地選択処理
-        // =================================
         function selectDestination(destination) {
             console.log('🎯 目的地選択:', destination.name);
             selectedDestination = destination;
@@ -774,21 +724,41 @@
             switchScreen('ar');
         }
 
-        // =================================
-        // カメラ権限要求
-        // =================================
+        // カメラ初期化メッセージ表示
+        function showCameraLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'camera-loading';
+            loadingDiv.className = 'camera-loading';
+            loadingDiv.innerHTML = `
+                <h3>📷 カメラを起動中...</h3>
+                <p>しばらくお待ちください</p>
+                <div class="loading-spinner"></div>
+            `;
+            document.body.appendChild(loadingDiv);
+        }
+
+        function hideCameraLoading() {
+            const loadingDiv = document.getElementById('camera-loading');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        // カメラ権限要求（最終版）
         async function requestCameraPermission() {
             try {
                 debugInfo.camera = 'progress';
                 updateDebugInfo();
+                showCameraLoading();
                 
                 console.log('📷 カメラ権限要求開始');
                 
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: { 
                         facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
+                        width: { ideal: 1280, min: 640 },
+                        height: { ideal: 720, min: 480 },
+                        frameRate: { ideal: 30, min: 15 }
                     },
                     audio: false
                 });
@@ -797,38 +767,20 @@
                 debugInfo.camera = 'ok';
                 updateDebugInfo();
                 
-                // ストリームを保存（後でAR.jsが使用）
                 cameraStream = stream;
-                
                 return true;
             } catch (error) {
                 console.error('❌ カメラアクセス拒否:', error);
                 debugInfo.camera = 'error';
                 updateDebugInfo();
+                hideCameraLoading();
                 
-                showCameraError('カメラへのアクセスが許可されていません。\nブラウザの設定でカメラアクセスを許可してください。');
+                alert(`カメラにアクセスできません: ${error.message}\n\nブラウザの設定でカメラアクセスを許可してください。`);
                 return false;
             }
         }
 
-        function showCameraError(message) {
-            const errorOverlay = document.createElement('div');
-            errorOverlay.className = 'camera-permission-overlay';
-            errorOverlay.innerHTML = `
-                <div class="camera-permission-content">
-                    <h3>📷 カメラアクセスが必要です</h3>
-                    <p>${message}</p>
-                    <button class="permission-button" onclick="location.reload()">
-                        再試行
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(errorOverlay);
-        }
-
-        // =================================
-        // AR初期化
-        // =================================
+        // AR初期化（最終完成版）
         async function initializeAR() {
             try {
                 console.log('📱 AR初期化開始');
@@ -851,44 +803,83 @@
                 arScene.style.opacity = '1';
                 arScene.style.zIndex = '1';
                 
-                // 4. AR.js初期化完了待機
+                // 4. カメラ映像監視開始
+                startVideoMonitoring();
+                
+                // 5. AR.js初期化完了待機
                 return new Promise((resolve, reject) => {
                     const timeout = setTimeout(() => {
+                        hideCameraLoading();
                         reject(new Error('AR.js初期化タイムアウト'));
-                    }, 10000);
+                    }, 15000);
 
                     // シーン準備完了イベント
                     arScene.addEventListener('loaded', () => {
-                        clearTimeout(timeout);
                         console.log('✅ AR.jsシーン読み込み完了');
                         
-                        // カメラ初期化待機
                         setTimeout(() => {
+                            clearTimeout(timeout);
+                            hideCameraLoading();
                             isARActive = true;
                             debugInfo.ar = 'ok';
                             updateDebugInfo();
                             startNavigation();
                             resolve();
-                        }, 2000);
+                        }, 3000);
                     });
 
-                    // エラーハンドリング
+                    // ビデオ読み込み完了
                     arScene.addEventListener('arjs-video-loaded', () => {
                         console.log('✅ AR.js カメラ映像読み込み完了');
-                    });
-
-                    arScene.addEventListener('arjs-scene-initialized', () => {
-                        console.log('✅ AR.jsシーン初期化完了');
+                        debugInfo.video = 'ok';
+                        updateDebugInfo();
                     });
                 });
                 
             } catch (error) {
                 console.error('AR初期化エラー:', error);
+                hideCameraLoading();
                 debugInfo.camera = 'error';
                 debugInfo.ar = 'error';
                 updateDebugInfo();
-                showCameraError(error.message);
+                alert(`AR初期化に失敗しました: ${error.message}`);
             }
+        }
+
+        // カメラ映像監視
+        function startVideoMonitoring() {
+            const checkVideo = () => {
+                const video = document.querySelector('video');
+                if (video) {
+                    videoElement = video;
+                    if (video.videoWidth > 0 && video.videoHeight > 0) {
+                        console.log('✅ カメラ映像確認:', video.videoWidth, 'x', video.videoHeight);
+                        debugInfo.video = 'ok';
+                        hideCameraLoading();
+                    } else {
+                        debugInfo.video = 'progress';
+                    }
+                    updateDebugInfo();
+                }
+            };
+
+            // 定期チェック
+            const videoMonitor = setInterval(() => {
+                checkVideo();
+                if (debugInfo.video === 'ok') {
+                    clearInterval(videoMonitor);
+                }
+            }, 500);
+
+            // 5秒後にタイムアウト
+            setTimeout(() => {
+                clearInterval(videoMonitor);
+                if (debugInfo.video !== 'ok') {
+                    console.warn('⚠️ カメラ映像検出タイムアウト');
+                    debugInfo.video = 'warning';
+                    updateDebugInfo();
+                }
+            }, 5000);
         }
 
         function startNavigation() {
@@ -915,9 +906,7 @@
             console.log('🧭 ナビゲーション開始');
         }
 
-        // =================================
         // ユーティリティ関数
-        // =================================
         function updateStatus(message) {
             const statusElement = document.getElementById('status-message');
             if (statusElement) {
@@ -929,6 +918,8 @@
         function updateDebugInfo() {
             const debugContent = document.getElementById('debug-content');
             if (!debugContent) return;
+
+            const videoInfo = videoElement ? `${videoElement.videoWidth}x${videoElement.videoHeight}` : '未検出';
 
             debugContent.innerHTML = `
                 <div class="debug-item">
@@ -950,6 +941,10 @@
                 <div class="debug-item">
                     <span class="debug-status ${debugInfo.camera}"></span>
                     カメラ: ${getStatusText(debugInfo.camera)}
+                </div>
+                <div class="debug-item">
+                    <span class="debug-status ${debugInfo.video}"></span>
+                    映像: ${videoInfo}
                 </div>
                 <div class="debug-item">
                     <span class="debug-status ${debugInfo.ar}"></span>
@@ -1008,9 +1003,7 @@
             return (Math.atan2(y, x) * 180/Math.PI + 360) % 360;
         }
 
-        // =================================
         // AR制御関数
-        // =================================
         function goBackToDestinations() {
             // カメラストリーム停止
             if (cameraStream) {
@@ -1020,7 +1013,9 @@
             
             isARActive = false;
             selectedDestination = null;
+            videoElement = null;
             debugInfo.camera = 'pending';
+            debugInfo.video = 'pending';
             updateDebugInfo();
             switchScreen('destination');
         }
@@ -1031,9 +1026,7 @@
             }
         }
 
-        // =================================
         // エラーハンドリング
-        // =================================
         window.addEventListener('error', function(e) {
             console.error('JavaScriptエラー:', e.error);
             debugInfo.initialization = 'error';
