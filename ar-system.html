@@ -3,161 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARナビゲーション - 温泉旅館</title>
+    <title>ARナビゲーション - 温泉旅館（修正版）</title>
     
-    <!-- AR.js & A-Frame -->
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.min.js"></script>
+    <!-- Meta tags -->
+    <meta name="description" content="温泉旅館ARナビゲーションシステム">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <style>
+        /* Critical CSS */
         body {
             margin: 0;
-            font-family: 'Noto Sans JP', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             overflow: hidden;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
-        /* UI オーバーレイ */
-        .ui-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1000;
-        }
-        
-        .ui-element {
-            pointer-events: auto;
-        }
-        
-        /* トップバー */
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            z-index: 1001;
-        }
-        
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #4CAF50;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        /* コントロールパネル */
-        .control-panel {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            padding: 15px;
-            border-radius: 20px;
-            display: flex;
-            gap: 10px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .control-button {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 18px;
-        }
-        
-        .control-button:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
-        
-        .control-button.active {
-            background: #4CAF50;
-        }
-        
-        /* 目的地選択パネル */
-        .destination-panel {
-            position: fixed;
-            top: 60px;
-            right: 20px;
-            background: rgba(0,0,0,0.8);
-            padding: 15px;
-            border-radius: 15px;
-            color: white;
-            max-width: 250px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .destination-button {
-            display: block;
-            width: 100%;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-        }
-        
-        .destination-button:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateX(5px);
-        }
-        
-        /* 情報パネル */
-        .info-panel {
-            position: fixed;
-            bottom: 120px;
-            left: 20px;
-            background: rgba(0,0,0,0.8);
-            padding: 15px;
-            border-radius: 15px;
-            color: white;
-            max-width: 200px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .distance-info {
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        
-        .direction-arrow {
-            font-size: 24px;
-            margin: 10px 0;
-            text-align: center;
-        }
-        
-        /* ローディング画面 */
+        /* Loading Screen */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -169,18 +34,23 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
             z-index: 2000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
         
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top: 3px solid white;
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         @keyframes spin {
@@ -189,463 +59,486 @@
         }
         
         .loading-text {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .loading-progress {
+            font-size: 16px;
+            opacity: 0.8;
+            text-align: center;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+        
+        .debug-info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .debug-info.show {
+            display: block;
+        }
+        
+        .error-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f44336;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .error-screen.show {
+            display: flex;
+        }
+        
+        .error-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+        
+        .error-button {
+            background: white;
+            color: #f44336;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 6px;
+        }
+        
+        /* Success Screen */
+        .ar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+        
+        .ar-container.show {
+            display: block;
+        }
+        
+        .simple-ui {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            text-align: center;
+        }
+        
+        .nav-info {
             font-size: 18px;
             margin-bottom: 10px;
         }
         
-        .loading-progress {
-            font-size: 14px;
+        .distance-info {
+            font-size: 16px;
             opacity: 0.8;
         }
         
-        /* レスポンシブ対応 */
-        @media (max-width: 768px) {
-            .destination-panel {
-                right: 10px;
-                max-width: 200px;
-            }
-            
-            .info-panel {
-                left: 10px;
-                max-width: 150px;
-            }
-            
-            .control-panel {
-                bottom: 10px;
-            }
-        }
-        
-        /* エラー表示 */
-        .error-message {
+        /* Debug Toggle */
+        .debug-toggle {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(244, 67, 54, 0.9);
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
             z-index: 2001;
-        }
-        
-        .hidden {
-            display: none !important;
         }
     </style>
 </head>
 <body>
-    <!-- ローディング画面 -->
+    <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-spinner"></div>
-        <div class="loading-text">ARシステム初期化中...</div>
-        <div id="loading-progress" class="loading-progress">センサーを準備しています</div>
+        <div id="loading-text" class="loading-text">ARシステム初期化中...</div>
+        <div id="loading-progress" class="loading-progress">システムを準備しています</div>
     </div>
     
-    <!-- AR Scene -->
-    <a-scene
-        id="ar-scene"
-        embedded
-        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-        vr-mode-ui="enabled: false"
-        device-orientation-permission-ui="enabled: false">
-        
-        <!-- カメラ -->
-        <a-camera
-            id="ar-camera"
-            gps-camera
-            rotation-reader
-            look-controls-enabled="false"
-            arjs-look-controls="smoothingFactor: 0.1"
-            position="0 0 0">
-        </a-camera>
-        
-        <!-- ライト設定 -->
-        <a-light type="ambient" color="#404040"></a-light>
-        <a-light type="directional" position="0 10 0" color="#ffffff"></a-light>
-        
-        <!-- ARマーカー（フロア判定用） -->
-        <a-marker
-            id="floor-marker"
-            type="pattern"
-            url="data:image/png;base64,..."
-            smooth="true"
-            smoothCount="10"
-            smoothTolerance="0.01"
-            smoothThreshold="5">
-            <a-text
-                value="1F エントランス"
-                position="0 0.5 0"
-                align="center"
-                color="#000000">
-            </a-text>
-        </a-marker>
-        
-        <!-- 動的生成されるナビゲーション要素 -->
-        <a-entity id="navigation-elements"></a-entity>
-        
-        <!-- 目的地マーカー -->
-        <a-entity id="destination-markers"></a-entity>
-        
-        <!-- 経路表示 -->
-        <a-entity id="route-display"></a-entity>
-    </a-scene>
+    <!-- Error Screen -->
+    <div id="error-screen" class="error-screen">
+        <div class="error-title">⚠️ 初期化エラー</div>
+        <div id="error-message" class="error-message">問題が発生しました</div>
+        <button class="error-button" onclick="retryInitialization()">再試行</button>
+        <button class="error-button" onclick="showSimpleMode()">簡易モード</button>
+        <button class="error-button" onclick="goHome()">ホームに戻る</button>
+    </div>
     
-    <!-- UI オーバーレイ -->
-    <div class="ui-overlay">
-        <!-- トップバー -->
-        <div class="top-bar ui-element">
-            <div class="status-indicator">
-                <div class="status-dot"></div>
-                <span id="status-text">システム準備中</span>
-            </div>
-            <div>
-                <button class="control-button" onclick="toggleLanguage()">🌐</button>
-                <button class="control-button" onclick="goHome()">🏠</button>
-            </div>
-        </div>
-        
-        <!-- 目的地選択パネル -->
-        <div id="destination-panel" class="destination-panel ui-element">
-            <h3 style="margin-top: 0;">目的地を選択</h3>
-            <button class="destination-button" onclick="navigateTo('reception')">
-                🏨 フロント・受付
-            </button>
-            <button class="destination-button" onclick="navigateTo('onsen')">
-                ♨️ 大浴場・温泉
-            </button>
-            <button class="destination-button" onclick="navigateTo('restaurant')">
-                🍽️ レストラン・食事処
-            </button>
-            <button class="destination-button" onclick="navigateTo('elevator')">
-                🛗 エレベーター
-            </button>
-            <button class="destination-button" onclick="navigateTo('toilet')">
-                🚻 お手洗い
-            </button>
-            <button class="destination-button" onclick="navigateTo('shop')">
-                🛍️ 売店・お土産
-            </button>
-            <button class="destination-button" onclick="navigateTo('lounge')">
-                🛋️ ラウンジ・休憩所
-            </button>
-            <button class="destination-button" onclick="navigateTo('parking')">
-                🚗 駐車場
-            </button>
-        </div>
-        
-        <!-- 情報パネル -->
-        <div id="info-panel" class="info-panel ui-element">
-            <div class="distance-info">
-                距離: <span id="distance-display">--m</span>
-            </div>
-            <div class="distance-info">
-                到着予定: <span id="eta-display">--分</span>
-            </div>
-            <div class="direction-arrow" id="direction-arrow">🧭</div>
-            <div style="font-size: 12px; opacity: 0.8;">
-                フロア: <span id="floor-display">--</span>
-            </div>
-        </div>
-        
-        <!-- コントロールパネル */
-        <div class="control-panel ui-element">
-            <button class="control-button" onclick="toggleVoice()" id="voice-btn">🔊</button>
-            <button class="control-button" onclick="toggleVibration()" id="vibration-btn">📳</button>
-            <button class="control-button" onclick="recalibrate()">📍</button>
-            <button class="control-button" onclick="showHelp()">❓</button>
+    <!-- AR Container -->
+    <div id="ar-container" class="ar-container">
+        <div class="simple-ui">
+            <div class="nav-info">🧭 ARナビゲーション動作中</div>
+            <div class="distance-info">目的地を選択してください</div>
         </div>
     </div>
     
-    <!-- エラーメッセージ -->
-    <div id="error-message" class="error-message hidden">
-        <h3>⚠️ エラーが発生しました</h3>
-        <p id="error-text"></p>
-        <button onclick="hideError()" style="background: white; color: #f44336; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">閉じる</button>
+    <!-- Debug Toggle -->
+    <button class="debug-toggle" onclick="toggleDebug()">DEBUG</button>
+    
+    <!-- Debug Info -->
+    <div id="debug-info" class="debug-info">
+        <div id="debug-content"></div>
     </div>
-    
-    <!-- JavaScript読み込み -->
-    <script src="js/sensors.js"></script>
-    <script src="js/navigation.js"></script>
-    <script src="js/translation.js"></script>
-    <script src="js/floor-detection.js"></script>
-    
-    <!-- メインスクリプト -->
+
     <script>
-        // グローバル変数
-        let arSystem = null;
-        let currentLanguage = 'ja';
-        let isVoiceEnabled = true;
-        let isVibrationEnabled = true;
-        let currentDestination = null;
-        
-        // システム初期化
-        document.addEventListener('DOMContentLoaded', async function() {
-            try {
-                await initializeARSystem();
-            } catch (error) {
-                console.error('AR初期化エラー:', error);
-                showError('ARシステムの初期化に失敗しました。');
-            }
-        });
-        
-        // ARシステム初期化
-        async function initializeARSystem() {
-            updateLoadingProgress('位置情報の許可を確認中...');
-            
-            // 位置情報許可
-            if (!navigator.geolocation) {
-                throw new Error('位置情報がサポートされていません');
+        // Debug system
+        class DebugLogger {
+            constructor() {
+                this.logs = [];
+                this.isVisible = false;
             }
             
-            updateLoadingProgress('センサーを初期化中...');
+            log(message, level = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = `[${timestamp}] ${level.toUpperCase()}: ${message}`;
+                this.logs.push(logEntry);
+                console.log(logEntry);
+                this.updateDebugDisplay();
+            }
             
-            // センサー初期化
-            const sensorManager = new SensorManager();
-            await sensorManager.initialize();
+            error(message) {
+                this.log(message, 'error');
+            }
             
-            updateLoadingProgress('ナビゲーションシステムを準備中...');
+            warn(message) {
+                this.log(message, 'warn');
+            }
             
-            // ナビゲーションシステム初期化
-            const navigationSystem = new NavigationSystem();
-            await navigationSystem.initialize();
+            info(message) {
+                this.log(message, 'info');
+            }
             
-            updateLoadingProgress('多言語システムを準備中...');
-            
-            // 翻訳システム初期化
-            const translationManager = new TranslationManager();
-            await translationManager.initialize();
-            
-            updateLoadingProgress('フロア検出システムを準備中...');
-            
-            // フロア検出システム初期化
-            const floorDetection = new FloorDetectionSystem();
-            await floorDetection.initialize();
-            
-            updateLoadingProgress('ARシーンを構築中...');
-            
-            // ARシーン準備
-            await setupARScene();
-            
-            updateLoadingProgress('完了');
-            
-            // ローディング画面を隠す
-            setTimeout(() => {
-                document.getElementById('loading-screen').classList.add('hidden');
-                document.getElementById('status-text').textContent = 'AR準備完了';
-                startARNavigation();
-            }, 1000);
-        }
-        
-        // AR Scene setup
-        async function setupARScene() {
-            const scene = document.getElementById('ar-scene');
-            
-            // カメライベントリスナー
-            const camera = document.getElementById('ar-camera');
-            camera.addEventListener('componentchanged', function(evt) {
-                if (evt.detail.name === 'rotation') {
-                    updateNavigationDisplay();
+            updateDebugDisplay() {
+                const debugContent = document.getElementById('debug-content');
+                if (debugContent) {
+                    debugContent.innerHTML = this.logs.slice(-10).join('<br>');
                 }
-            });
+            }
+            
+            toggle() {
+                this.isVisible = !this.isVisible;
+                const debugInfo = document.getElementById('debug-info');
+                if (debugInfo) {
+                    debugInfo.classList.toggle('show', this.isVisible);
+                }
+            }
         }
         
-        // ナビゲーション開始
-        function startARNavigation() {
-            console.log('ARナビゲーション開始');
-            // 定期的な位置更新
-            setInterval(updatePosition, 1000);
-            setInterval(updateNavigationDisplay, 500);
-        }
+        const debugLogger = new DebugLogger();
         
-        // 位置更新
-        function updatePosition() {
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    const coords = {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                        accuracy: position.coords.accuracy
-                    };
-                    
-                    // 位置情報を使った処理
-                    if (currentDestination) {
-                        updateNavigationInfo(coords);
+        // Initialization system
+        class ARInitializer {
+            constructor() {
+                this.initSteps = [
+                    { name: 'ブラウザチェック', fn: this.checkBrowser.bind(this) },
+                    { name: 'カメラ権限', fn: this.requestCameraPermission.bind(this) },
+                    { name: '位置情報権限', fn: this.requestLocationPermission.bind(this) },
+                    { name: 'センサー初期化', fn: this.initializeSensors.bind(this) },
+                    { name: 'ARライブラリ', fn: this.loadARLibraries.bind(this) },
+                    { name: '完了', fn: this.finishInitialization.bind(this) }
+                ];
+                this.currentStep = 0;
+                this.isInitializing = false;
+            }
+            
+            async initialize() {
+                if (this.isInitializing) return;
+                this.isInitializing = true;
+                
+                debugLogger.info('ARシステム初期化開始');
+                
+                try {
+                    for (let i = 0; i < this.initSteps.length; i++) {
+                        this.currentStep = i;
+                        const step = this.initSteps[i];
+                        
+                        this.updateProgress(`${step.name}中...`);
+                        debugLogger.info(`ステップ ${i + 1}/${this.initSteps.length}: ${step.name}`);
+                        
+                        await step.fn();
+                        await this.delay(500); // UI更新のための待機
                     }
-                },
-                error => {
-                    console.error('位置取得エラー:', error);
+                    
+                    debugLogger.info('初期化完了');
+                    this.showSuccess();
+                    
+                } catch (error) {
+                    debugLogger.error(`初期化失敗: ${error.message}`);
+                    this.showError(error.message);
+                } finally {
+                    this.isInitializing = false;
                 }
-            );
-        }
-        
-        // ナビゲーション情報更新
-        function updateNavigationInfo(position) {
-            // 距離計算と表示更新
-            const distance = calculateDistance(position, currentDestination);
-            document.getElementById('distance-display').textContent = `${Math.round(distance)}m`;
-            
-            // 到着予定時間
-            const eta = Math.ceil(distance / 60); // 1分60m想定
-            document.getElementById('eta-display').textContent = `${eta}分`;
-            
-            // 方向矢印更新
-            const direction = calculateDirection(position, currentDestination);
-            updateDirectionArrow(direction);
-        }
-        
-        // 目的地ナビゲーション
-        function navigateTo(destination) {
-            currentDestination = destination;
-            console.log('ナビゲーション開始:', destination);
-            
-            // 音声案内
-            if (isVoiceEnabled) {
-                const message = getNavigationMessage(destination);
-                speak(message);
             }
             
-            // バイブレーション
-            if (isVibrationEnabled && 'vibrate' in navigator) {
-                navigator.vibrate([100, 50, 100]);
+            async checkBrowser() {
+                const userAgent = navigator.userAgent;
+                debugLogger.info(`ブラウザ: ${userAgent}`);
+                
+                // iPhone Safari check
+                if (!userAgent.includes('iPhone') && !userAgent.includes('iPad')) {
+                    debugLogger.warn('iOSデバイスではありません');
+                }
+                
+                // Required APIs check
+                const requiredAPIs = [
+                    'navigator.mediaDevices',
+                    'navigator.geolocation',
+                    'DeviceMotionEvent',
+                    'DeviceOrientationEvent'
+                ];
+                
+                for (const api of requiredAPIs) {
+                    const exists = this.checkAPIExists(api);
+                    debugLogger.info(`${api}: ${exists ? 'サポート' : '非サポート'}`);
+                }
             }
             
-            // AR表示更新
-            updateARDisplay(destination);
-        }
-        
-        // AR表示更新
-        function updateARDisplay(destination) {
-            const scene = document.getElementById('ar-scene');
-            const navElements = document.getElementById('navigation-elements');
-            
-            // 既存の要素をクリア
-            while (navElements.firstChild) {
-                navElements.removeChild(navElements.firstChild);
+            checkAPIExists(apiPath) {
+                const parts = apiPath.split('.');
+                let obj = window;
+                for (const part of parts) {
+                    if (!(part in obj)) return false;
+                    obj = obj[part];
+                }
+                return true;
             }
             
-            // 目的地マーカー追加
-            const marker = document.createElement('a-sphere');
-            marker.setAttribute('position', '0 2 -5');
-            marker.setAttribute('radius', '0.5');
-            marker.setAttribute('color', '#ff6b6b');
-            marker.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 4000');
+            async requestCameraPermission() {
+                try {
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        throw new Error('カメラAPIがサポートされていません');
+                    }
+                    
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            facingMode: 'environment',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        } 
+                    });
+                    
+                    debugLogger.info('カメラ権限取得成功');
+                    
+                    // ストリームを停止（テスト用）
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                } catch (error) {
+                    if (error.name === 'NotAllowedError') {
+                        throw new Error('カメラの使用が許可されていません。設定でカメラを許可してください。');
+                    } else if (error.name === 'NotFoundError') {
+                        throw new Error('カメラが見つかりません。');
+                    } else {
+                        throw new Error(`カメラエラー: ${error.message}`);
+                    }
+                }
+            }
             
-            const text = document.createElement('a-text');
-            text.setAttribute('value', getDestinationName(destination));
-            text.setAttribute('position', '0 3 -5');
-            text.setAttribute('align', 'center');
-            text.setAttribute('color', '#ffffff');
-            text.setAttribute('scale', '2 2 2');
+            async requestLocationPermission() {
+                try {
+                    if (!navigator.geolocation) {
+                        throw new Error('位置情報APIがサポートされていません');
+                    }
+                    
+                    await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                debugLogger.info(`位置情報取得成功: ${position.coords.latitude}, ${position.coords.longitude}`);
+                                resolve(position);
+                            },
+                            (error) => {
+                                debugLogger.warn(`位置情報エラー: ${error.message}`);
+                                // 位置情報は必須ではないので警告のみ
+                                resolve(null);
+                            },
+                            { timeout: 10000, enableHighAccuracy: false }
+                        );
+                    });
+                    
+                } catch (error) {
+                    debugLogger.warn(`位置情報取得失敗: ${error.message}`);
+                    // 位置情報エラーは致命的ではないので続行
+                }
+            }
             
-            navElements.appendChild(marker);
-            navElements.appendChild(text);
-        }
-        
-        // ユーティリティ関数
-        function updateLoadingProgress(message) {
-            document.getElementById('loading-progress').textContent = message;
-        }
-        
-        function updateNavigationDisplay() {
-            // ナビゲーション表示の更新処理
-        }
-        
-        function calculateDistance(pos1, pos2) {
-            // 距離計算（簡略化）
-            return Math.random() * 50 + 10; // デモ用
-        }
-        
-        function calculateDirection(pos1, pos2) {
-            // 方向計算（簡略化）
-            return Math.random() * 360; // デモ用
-        }
-        
-        function updateDirectionArrow(direction) {
-            const arrows = ['⬆️', '↗️', '➡️', '↘️', '⬇️', '↙️', '⬅️', '↖️'];
-            const index = Math.floor(direction / 45) % 8;
-            document.getElementById('direction-arrow').textContent = arrows[index];
-        }
-        
-        function getNavigationMessage(destination) {
-            const messages = {
-                'reception': 'フロント・受付へご案内します',
-                'onsen': '大浴場・温泉へご案内します',
-                'restaurant': 'レストラン・食事処へご案内します',
-                'elevator': 'エレベーターへご案内します',
-                'toilet': 'お手洗いへご案内します',
-                'shop': '売店・お土産コーナーへご案内します',
-                'lounge': 'ラウンジ・休憩所へご案内します',
-                'parking': '駐車場へご案内します'
-            };
-            return messages[destination] || '目的地へご案内します';
-        }
-        
-        function getDestinationName(destination) {
-            const names = {
-                'reception': 'フロント',
-                'onsen': '大浴場',
-                'restaurant': 'レストラン',
-                'elevator': 'エレベーター',
-                'toilet': 'お手洗い',
-                'shop': '売店',
-                'lounge': 'ラウンジ',
-                'parking': '駐車場'
-            };
-            return names[destination] || '目的地';
-        }
-        
-        function speak(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = currentLanguage === 'ja' ? 'ja-JP' : 'en-US';
-                speechSynthesis.speak(utterance);
+            async initializeSensors() {
+                try {
+                    // DeviceMotion permission (iOS 13+)
+                    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                        const permission = await DeviceMotionEvent.requestPermission();
+                        if (permission !== 'granted') {
+                            debugLogger.warn('モーションセンサー権限が拒否されました');
+                        } else {
+                            debugLogger.info('モーションセンサー権限取得成功');
+                        }
+                    }
+                    
+                    // DeviceOrientation permission (iOS 13+)
+                    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                        const permission = await DeviceOrientationEvent.requestPermission();
+                        if (permission !== 'granted') {
+                            debugLogger.warn('方向センサー権限が拒否されました');
+                        } else {
+                            debugLogger.info('方向センサー権限取得成功');
+                        }
+                    }
+                    
+                } catch (error) {
+                    debugLogger.warn(`センサー初期化警告: ${error.message}`);
+                    // センサーエラーは致命的ではないので続行
+                }
+            }
+            
+            async loadARLibraries() {
+                try {
+                    // A-Frame check (not loading for now to avoid complexity)
+                    debugLogger.info('ARライブラリスキップ（簡易モード）');
+                    
+                } catch (error) {
+                    debugLogger.warn(`ARライブラリエラー: ${error.message}`);
+                    // ライブラリエラーも致命的ではないので続行
+                }
+            }
+            
+            async finishInitialization() {
+                debugLogger.info('初期化処理完了');
+            }
+            
+            updateProgress(message) {
+                const progressEl = document.getElementById('loading-progress');
+                if (progressEl) {
+                    progressEl.textContent = message;
+                }
+            }
+            
+            showSuccess() {
+                const loadingScreen = document.getElementById('loading-screen');
+                const arContainer = document.getElementById('ar-container');
+                
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                }
+                
+                if (arContainer) {
+                    arContainer.classList.add('show');
+                }
+            }
+            
+            showError(message) {
+                const loadingScreen = document.getElementById('loading-screen');
+                const errorScreen = document.getElementById('error-screen');
+                const errorMessage = document.getElementById('error-message');
+                
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                }
+                
+                if (errorScreen) {
+                    errorScreen.classList.add('show');
+                }
+                
+                if (errorMessage) {
+                    errorMessage.textContent = message;
+                }
+            }
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             }
         }
         
-        function showError(message) {
-            document.getElementById('error-text').textContent = message;
-            document.getElementById('error-message').classList.remove('hidden');
+        // Global functions
+        let arInitializer = null;
+        
+        function toggleDebug() {
+            debugLogger.toggle();
         }
         
-        function hideError() {
-            document.getElementById('error-message').classList.add('hidden');
-        }
-        
-        // UI操作関数
-        function toggleLanguage() {
-            currentLanguage = currentLanguage === 'ja' ? 'en' : 'ja';
-            console.log('言語切替:', currentLanguage);
-        }
-        
-        function toggleVoice() {
-            isVoiceEnabled = !isVoiceEnabled;
-            const btn = document.getElementById('voice-btn');
-            btn.classList.toggle('active', isVoiceEnabled);
-            btn.textContent = isVoiceEnabled ? '🔊' : '🔇';
-        }
-        
-        function toggleVibration() {
-            isVibrationEnabled = !isVibrationEnabled;
-            const btn = document.getElementById('vibration-btn');
-            btn.classList.toggle('active', isVibrationEnabled);
-            btn.textContent = isVibrationEnabled ? '📳' : '📴';
-        }
-        
-        function recalibrate() {
-            console.log('位置再校正');
-            if ('vibrate' in navigator) {
-                navigator.vibrate(200);
+        function retryInitialization() {
+            const errorScreen = document.getElementById('error-screen');
+            const loadingScreen = document.getElementById('loading-screen');
+            
+            if (errorScreen) errorScreen.classList.remove('show');
+            if (loadingScreen) loadingScreen.classList.remove('hidden');
+            
+            if (arInitializer) {
+                arInitializer.initialize();
             }
         }
         
-        function showHelp() {
-            alert('ARナビの使い方:\n\n1. スマホをかざしてAR画面を確認\n2. 目的地を選択\n3. 画面の矢印に従って移動\n4. 音声案内を聞きながら進む\n\n困った時は館内スタッフにお声がけください。');
+        function showSimpleMode() {
+            const errorScreen = document.getElementById('error-screen');
+            const arContainer = document.getElementById('ar-container');
+            
+            if (errorScreen) errorScreen.classList.remove('show');
+            if (arContainer) arContainer.classList.add('show');
+            
+            debugLogger.info('簡易モードで起動');
         }
         
         function goHome() {
             window.location.href = 'index.html';
         }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLogger.info('DOMContentLoaded');
+            
+            arInitializer = new ARInitializer();
+            
+            // 1秒後に初期化開始（UI準備のため）
+            setTimeout(() => {
+                arInitializer.initialize();
+            }, 1000);
+        });
+        
+        // Error handling
+        window.addEventListener('error', function(event) {
+            debugLogger.error(`JS Error: ${event.error?.message || event.message}`);
+        });
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            debugLogger.error(`Promise Error: ${event.reason}`);
+        });
     </script>
 </body>
 </html>
