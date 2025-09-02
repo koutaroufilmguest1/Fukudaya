@@ -166,7 +166,7 @@
             line-height: 1.3 !important;
         }
 
-        /* AR画面（カメラ表示保証版） */
+        /* AR画面 */
         #ar-screen {
             background: black !important;
             position: fixed !important;
@@ -176,7 +176,7 @@
             height: 100vh !important;
         }
 
-        /* カメラ映像確実表示 */
+        /* カメラ映像 */
         #camera-video {
             position: fixed !important;
             top: 0 !important;
@@ -186,6 +186,17 @@
             object-fit: cover !important;
             z-index: 1 !important;
             background: black !important;
+        }
+
+        /* AR Canvas */
+        #ar-canvas {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 50 !important;
+            pointer-events: none !important;
         }
 
         /* ARオーバーレイUI */
@@ -263,21 +274,40 @@
             margin: 1rem auto;
         }
 
-        /* デバッグパネル */
+        /* デバッグパネル（最小化対応版） */
         .debug-panel {
             position: fixed !important;
             bottom: 10px !important;
             right: 10px !important;
-            left: 10px !important;
             background: rgba(0, 0, 0, 0.85) !important;
             color: white !important;
             padding: 0.8rem !important;
             border-radius: 8px !important;
             font-size: 0.7rem !important;
             z-index: 2000 !important;
-            pointer-events: none !important;
+            pointer-events: auto !important;
             max-height: 150px !important;
             overflow-y: auto !important;
+            transition: all 0.3s ease !important;
+            cursor: pointer !important;
+            width: auto !important;
+            max-width: 300px !important;
+        }
+
+        .debug-panel.minimized {
+            width: 120px !important;
+            max-height: 40px !important;
+            padding: 0.5rem !important;
+            overflow: hidden !important;
+        }
+
+        .debug-panel.minimized h4 {
+            font-size: 0.7rem !important;
+            margin: 0 !important;
+        }
+
+        .debug-panel.minimized .debug-content {
+            display: none !important;
         }
 
         .debug-panel h4 {
@@ -375,6 +405,11 @@
             .destination-card p {
                 font-size: 0.8rem !important;
             }
+
+            .debug-panel {
+                left: 10px !important;
+                max-width: calc(100vw - 20px) !important;
+            }
         }
 
         @media (hover: none) and (pointer: coarse) {
@@ -403,10 +438,13 @@
         </div>
     </div>
 
-    <!-- AR画面（カメラ表示保証版） -->
+    <!-- AR画面 -->
     <div id="ar-screen" class="screen">
-        <!-- 直接制御カメラ映像 -->
+        <!-- カメラ映像 -->
         <video id="camera-video" autoplay playsinline muted></video>
+        
+        <!-- AR Canvas（矢印描画用） -->
+        <canvas id="ar-canvas"></canvas>
         
         <!-- ARオーバーレイUI -->
         <div class="ar-overlay">
@@ -427,7 +465,7 @@
     <!-- デバッグパネル -->
     <div class="debug-panel" id="debug-panel">
         <h4>🔧 システム状態</h4>
-        <div id="debug-content"></div>
+        <div id="debug-content" class="debug-content"></div>
     </div>
 
     <script>
@@ -440,6 +478,9 @@
         let destinationCardsCount = 0;
         let cameraStream = null;
         let videoElement = null;
+        let arCanvas = null;
+        let arContext = null;
+        let debugMinimized = false;
         
         let debugInfo = {
             initialization: 'pending',
@@ -452,57 +493,88 @@
             video: 'pending'
         };
 
+        // GPS座標更新（長崎県）
+        const DEFAULT_POSITION = {
+            lat: 32.76656645690299,
+            lng: 129.8575246988253,
+            accuracy: 10
+        };
+
+        // 目的地データ（長崎県の座標に更新）
         const destinations = [
             {
                 id: 'onsen',
                 name: '温泉大浴場',
                 icon: '♨️',
                 description: '露天風呂と内湯をお楽しみください',
-                coordinates: { lat: 35.6581, lng: 139.7414, floor: 1 }
+                coordinates: { lat: 32.76676645690299, lng: 129.8577246988253, floor: 1 }
             },
             {
                 id: 'restaurant',
                 name: 'お食事処',
                 icon: '🍽️',
                 description: '季節の会席料理をご堪能ください',
-                coordinates: { lat: 35.6582, lng: 139.7415, floor: 1 }
+                coordinates: { lat: 32.76686645690299, lng: 129.8578246988253, floor: 1 }
             },
             {
                 id: 'lobby',
                 name: 'ロビー・フロント',
                 icon: '🏛️',
                 description: 'チェックイン・アウト、各種ご案内',
-                coordinates: { lat: 35.6580, lng: 139.7413, floor: 1 }
+                coordinates: { lat: 32.76646645690299, lng: 129.8574246988253, floor: 1 }
             },
             {
                 id: 'garden',
                 name: '日本庭園',
                 icon: '🌸',
                 description: '四季折々の美しい庭園',
-                coordinates: { lat: 35.6583, lng: 139.7416, floor: 1 }
+                coordinates: { lat: 32.76696645690299, lng: 129.8579246988253, floor: 1 }
             },
             {
                 id: 'shop',
                 name: 'お土産処',
                 icon: '🎁',
                 description: '地元の特産品とお土産',
-                coordinates: { lat: 35.6579, lng: 139.7412, floor: 1 }
+                coordinates: { lat: 32.76636645690299, lng: 129.8573246988253, floor: 1 }
             },
             {
                 id: 'karaoke',
                 name: 'カラオケルーム',
                 icon: '🎤',
                 description: 'ご家族・ご友人とお楽しみください',
-                coordinates: { lat: 35.6581, lng: 139.7417, floor: 2 }
+                coordinates: { lat: 32.76666645690299, lng: 129.8576246988253, floor: 2 }
             }
         ];
 
         // 初期化処理
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 ARナビゲーションシステム起動');
+            setupDebugPanel();
             updateDebugInfo();
             initializeSystem();
         });
+
+        function setupDebugPanel() {
+            const debugPanel = document.getElementById('debug-panel');
+            debugPanel.addEventListener('click', toggleDebugPanel);
+        }
+
+        function toggleDebugPanel() {
+            const debugPanel = document.getElementById('debug-panel');
+            debugMinimized = !debugMinimized;
+            
+            if (debugMinimized) {
+                debugPanel.classList.add('minimized');
+            } else {
+                debugPanel.classList.remove('minimized');
+            }
+        }
+
+        function minimizeDebugPanel() {
+            const debugPanel = document.getElementById('debug-panel');
+            debugPanel.classList.add('minimized');
+            debugMinimized = true;
+        }
 
         async function initializeSystem() {
             try {
@@ -533,6 +605,11 @@
                 debugInfo.initialization = 'ok';
                 updateDebugInfo();
 
+                // 初期化完了後にデバッグパネルを最小化
+                setTimeout(() => {
+                    minimizeDebugPanel();
+                }, 2000);
+
                 await delay(1000);
                 switchScreen('destination');
 
@@ -561,8 +638,8 @@
                                 resolve();
                             },
                             (error) => {
-                                console.warn('GPS取得失敗、代替位置を使用:', error);
-                                userPosition = { lat: 35.6580, lng: 139.7413, accuracy: 1000 };
+                                console.warn('GPS取得失敗、デフォルト位置を使用:', error);
+                                userPosition = DEFAULT_POSITION;
                                 debugInfo.gps = 'warning';
                                 updateDebugInfo();
                                 resolve();
@@ -570,7 +647,7 @@
                             { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 }
                         );
                     } else {
-                        userPosition = { lat: 35.6580, lng: 139.7413, accuracy: 1000 };
+                        userPosition = DEFAULT_POSITION;
                         debugInfo.gps = 'warning';
                         updateDebugInfo();
                         resolve();
@@ -716,7 +793,94 @@
             }
         }
 
-        // カメラ初期化（保証版）
+        // ARキャンバス初期化
+        function initializeARCanvas() {
+            arCanvas = document.getElementById('ar-canvas');
+            if (!arCanvas) return false;
+            
+            arContext = arCanvas.getContext('2d');
+            
+            // キャンバスサイズを画面サイズに合わせる
+            function resizeCanvas() {
+                arCanvas.width = window.innerWidth;
+                arCanvas.height = window.innerHeight;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            return true;
+        }
+
+        // 3D矢印描画
+        function drawARArrow(direction, distance) {
+            if (!arContext) return;
+            
+            // キャンバスクリア
+            arContext.clearRect(0, 0, arCanvas.width, arCanvas.height);
+            
+            const centerX = arCanvas.width / 2;
+            const centerY = arCanvas.height / 2 + 50; // 少し下に配置
+            const arrowLength = Math.min(100, Math.max(30, 200 - distance));
+            
+            // 方向に基づいて矢印回転（デバイスの向きも考慮）
+            let adjustedDirection = direction;
+            if (deviceOrientation && deviceOrientation.alpha !== null) {
+                adjustedDirection = direction - deviceOrientation.alpha;
+            }
+            
+            const angleRad = (adjustedDirection - 90) * Math.PI / 180;
+            
+            arContext.save();
+            arContext.translate(centerX, centerY);
+            arContext.rotate(angleRad);
+            
+            // 矢印の影
+            arContext.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            arContext.shadowBlur = 5;
+            arContext.shadowOffsetX = 3;
+            arContext.shadowOffsetY = 3;
+            
+            // 矢印本体
+            arContext.fillStyle = '#FF6B6B';
+            arContext.strokeStyle = '#FF4444';
+            arContext.lineWidth = 3;
+            
+            arContext.beginPath();
+            arContext.moveTo(0, -arrowLength);
+            arContext.lineTo(-20, -arrowLength + 30);
+            arContext.lineTo(-8, -arrowLength + 30);
+            arContext.lineTo(-8, arrowLength);
+            arContext.lineTo(8, arrowLength);
+            arContext.lineTo(8, -arrowLength + 30);
+            arContext.lineTo(20, -arrowLength + 30);
+            arContext.closePath();
+            
+            arContext.fill();
+            arContext.stroke();
+            
+            // 光沢効果
+            const gradient = arContext.createLinearGradient(-10, -arrowLength, 10, arrowLength);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            arContext.fillStyle = gradient;
+            arContext.fill();
+            
+            arContext.restore();
+            
+            // 距離表示
+            arContext.fillStyle = 'white';
+            arContext.font = 'bold 16px Arial';
+            arContext.textAlign = 'center';
+            arContext.strokeStyle = 'black';
+            arContext.lineWidth = 3;
+            
+            const distanceText = `${Math.round(distance)}m`;
+            arContext.strokeText(distanceText, centerX, centerY + 80);
+            arContext.fillText(distanceText, centerX, centerY + 80);
+        }
+
+        // カメラ初期化
         async function initializeCamera() {
             try {
                 console.log('📱 カメラ初期化開始');
@@ -724,6 +888,11 @@
                 
                 debugInfo.camera = 'progress';
                 updateDebugInfo();
+                
+                // ARキャンバス初期化
+                if (!initializeARCanvas()) {
+                    throw new Error('ARキャンバス初期化失敗');
+                }
                 
                 // カメラ権限取得
                 const stream = await navigator.mediaDevices.getUserMedia({
@@ -821,7 +990,44 @@
             document.getElementById('direction-info').textContent = 
                 `方向: ${Math.round(bearing)}°`;
 
+            // AR矢印描画
+            if (arContext) {
+                drawARArrow(bearing, distance);
+            }
+
             console.log('🧭 ナビゲーション開始');
+            
+            // 定期的な矢印更新
+            startArrowUpdate(bearing, distance);
+        }
+
+        function startArrowUpdate(initialBearing, initialDistance) {
+            const updateArrow = () => {
+                if (!isARActive || !selectedDestination || !userPosition) return;
+                
+                const distance = calculateDistance(
+                    userPosition.lat, userPosition.lng,
+                    selectedDestination.coordinates.lat, selectedDestination.coordinates.lng
+                );
+
+                const bearing = calculateBearing(
+                    userPosition.lat, userPosition.lng,
+                    selectedDestination.coordinates.lat, selectedDestination.coordinates.lng
+                );
+
+                if (arContext) {
+                    drawARArrow(bearing, distance);
+                }
+            };
+            
+            // 1秒ごとに更新
+            const arrowInterval = setInterval(() => {
+                if (!isARActive) {
+                    clearInterval(arrowInterval);
+                    return;
+                }
+                updateArrow();
+            }, 1000);
         }
 
         // ユーティリティ関数
@@ -880,6 +1086,9 @@
                 <div class="debug-item">
                     選択目的地: ${selectedDestination ? selectedDestination.name : '未選択'}
                 </div>
+                <div class="debug-item">
+                    位置: ${userPosition ? `${userPosition.lat.toFixed(6)}, ${userPosition.lng.toFixed(6)}` : '未取得'}
+                </div>
             `;
         }
 
@@ -935,6 +1144,11 @@
             if (videoElement) {
                 videoElement.srcObject = null;
                 videoElement = null;
+            }
+            
+            // ARキャンバスクリア
+            if (arContext) {
+                arContext.clearRect(0, 0, arCanvas.width, arCanvas.height);
             }
             
             isARActive = false;
