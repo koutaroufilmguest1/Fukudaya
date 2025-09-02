@@ -1,0 +1,31 @@
+<svg width="48" height="64" viewBox="0 0 48 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="markerGradient" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- マーカー本体 -->
+  <circle cx="24" cy="20" r="18" 
+          fill="url(#markerGradient)" 
+          stroke="#FFFFFF" 
+          stroke-width="3"
+          filter="url(#glow)"/>
+  
+  <!-- 中央の点 -->
+  <circle cx="24" cy="20" r="6" fill="#FFFFFF" opacity="0.9"/>
+  
+  <!-- 下の三角 -->
+  <path d="M24 38 L16 22 L32 22 Z" fill="url(#markerGradient)"/>
+  
+  <!-- アニメーション -->
+  <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
+</svg>
