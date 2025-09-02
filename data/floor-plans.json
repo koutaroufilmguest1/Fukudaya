@@ -1,0 +1,454 @@
+{
+  "metadata": {
+    "name": "温泉旅館フロアプランデータ",
+    "version": "1.0",
+    "scale": "1:100",
+    "units": "meters",
+    "coordinateSystem": "local"
+  },
+  "floors": {
+    "1": {
+      "name": "1階",
+      "elevation": 0,
+      "bounds": {
+        "min": { "x": -5, "y": -2 },
+        "max": { "x": 40, "y": 20 }
+      },
+      "walls": [
+        {
+          "id": "wall_1f_south",
+          "start": { "x": -5, "y": -2 },
+          "end": { "x": 40, "y": -2 },
+          "thickness": 0.2,
+          "material": "concrete",
+          "height": 3.0
+        },
+        {
+          "id": "wall_1f_north", 
+          "start": { "x": -5, "y": 20 },
+          "end": { "x": 40, "y": 20 },
+          "thickness": 0.2,
+          "material": "concrete",
+          "height": 3.0
+        },
+        {
+          "id": "wall_1f_west",
+          "start": { "x": -5, "y": -2 },
+          "end": { "x": -5, "y": 20 },
+          "thickness": 0.2,
+          "material": "concrete",
+          "height": 3.0
+        },
+        {
+          "id": "wall_1f_east",
+          "start": { "x": 40, "y": -2 },
+          "end": { "x": 40, "y": 20 },
+          "thickness": 0.2,
+          "material": "concrete",
+          "height": 3.0
+        },
+        {
+          "id": "wall_1f_reception",
+          "start": { "x": 8, "y": 3 },
+          "end": { "x": 16, "y": 3 },
+          "thickness": 0.15,
+          "material": "drywall",
+          "height": 2.7
+        },
+        {
+          "id": "wall_1f_restaurant",
+          "start": { "x": 20, "y": 5 },
+          "end": { "x": 30, "y": 5 },
+          "thickness": 0.15,
+          "material": "drywall", 
+          "height": 2.7
+        }
+      ],
+      "rooms": [
+        {
+          "id": "entrance_hall",
+          "name": "エントランスホール",
+          "bounds": { "x": -2, "y": -1, "w": 12, "h": 8 },
+          "type": "entrance",
+          "accessibility": true,
+          "features": ["自動ドア", "受付カウンター", "待合ソファ"]
+        },
+        {
+          "id": "reception_room",
+          "name": "フロント・受付",
+          "bounds": { "x": 8, "y": 3, "w": 8, "h": 4 },
+          "type": "service",
+          "accessibility": true,
+          "features": ["受付カウンター", "バックオフィス", "セーフティボックス"]
+        },
+        {
+          "id": "lounge_room",
+          "name": "ラウンジ",
+          "bounds": { "x": 12, "y": 8, "w": 8, "h": 6 },
+          "type": "relaxation",
+          "accessibility": true,
+          "features": ["ソファ", "テーブル", "テレビ", "WiFi"]
+        },
+        {
+          "id": "restaurant_room",
+          "name": "レストラン",
+          "bounds": { "x": 20, "y": 5, "w": 15, "h": 8 },
+          "type": "dining",
+          "accessibility": true,
+          "features": ["テーブル席", "個室", "カウンター", "厨房"]
+        },
+        {
+          "id": "shop_room",
+          "name": "売店",
+          "bounds": { "x": 6, "y": 14, "w": 6, "h": 4 },
+          "type": "shopping",
+          "accessibility": true,
+          "features": ["商品棚", "レジカウンター", "試食コーナー"]
+        },
+        {
+          "id": "toilet_1f_room",
+          "name": "お手洗い（1階）",
+          "bounds": { "x": 10, "y": 17, "w": 4, "h": 3 },
+          "type": "facility",
+          "accessibility": true,
+          "features": ["男性用", "女性用", "多目的トイレ", "ベビーシート"]
+        }
+      ],
+      "doors": [
+        {
+          "id": "entrance_door",
+          "position": { "x": 0, "y": 0 },
+          "width": 2.0,
+          "type": "automatic",
+          "accessibility": true,
+          "connects": ["outside", "entrance_hall"]
+        },
+        {
+          "id": "reception_door",
+          "position": { "x": 10, "y": 3 },
+          "width": 1.0,
+          "type": "swing",
+          "accessibility": true,
+          "connects": ["entrance_hall", "reception_room"]
+        },
+        {
+          "id": "restaurant_door",
+          "position": { "x": 20, "y": 5 },
+          "width": 1.5,
+          "type": "swing",
+          "accessibility": true,
+          "connects": ["entrance_hall", "restaurant_room"]
+        },
+        {
+          "id": "elevator_door_1f",
+          "position": { "x": 20, "y": 2 },
+          "width": 1.2,
+          "type": "elevator",
+          "accessibility": true,
+          "connects": ["entrance_hall", "elevator_shaft"]
+        }
+      ],
+      "navigation": {
+        "walkableAreas": [
+          { "bounds": { "x": -2, "y": -1, "w": 12, "h": 8 }, "surface": "marble" },
+          { "bounds": { "x": 10, "y": 2, "w": 25, "h": 3 }, "surface": "carpet" },
+          { "bounds": { "x": 5, "y": 8, "w": 30, "h": 10 }, "surface": "wood" }
+        ],
+        "obstacles": [
+          { "position": { "x": 2, "y": 2 }, "size": { "w": 1, "h": 1 }, "type": "pillar" },
+          { "position": { "x": 15, "y": 10 }, "size": { "w": 2, "h": 1 }, "type": "sofa" }
+        ],
+        "landmarks": [
+          { "id": "main_pillar", "position": { "x": 2, "y": 2 }, "description": "メインピラー" },
+          { "id": "reception_counter", "position": { "x": 12, "y": 5 }, "description": "受付カウンター" }
+        ]
+      }
+    },
+    "2": {
+      "name": "2階",
+      "elevation": 3.5,
+      "bounds": {
+        "min": { "x": -5, "y": -2 },
+        "max": { "x": 45, "y": 20 }
+      },
+      "walls": [
+        {
+          "id": "wall_2f_south",
+          "start": { "x": -5, "y": -2 },
+          "end": { "x": 45, "y": -2 },
+          "thickness": 0.2,
+          "material": "concrete",
+          "height": 3.0
+        },
+        {
+          "id": "wall_2f_north",
+          "start": { "x": -5, "y": 20 },
+          "end": { "x": 45, "y": 20 },
+          "thickness": 0.2,
+          "material": "concrete",
+          "height": 3.0
+        },
+        {
+          "id": "wall_2f_west",
+          "start": { "x": -5, "y": -2 },
+          "end": { "x": -5, "y": 20 },
+          "thickness": 0.2,
+          "material": "concrete",
+          "height": 3.0
+        },
+        {
+          "id": "wall_2f_east",
+          "start": { "x": 45, "y": -2 },
+          "end": { "x": 45, "y": 20 },
+          "thickness": 0.2,
+          "material": "concrete",
+          "height": 3.0
+        },
+        {
+          "id": "wall_2f_onsen_divider",
+          "start": { "x": 32, "y": 10 },
+          "end": { "x": 40, "y": 10 },
+          "thickness": 0.2,
+          "material": "concrete",
+          "height": 3.0
+        }
+      ],
+      "rooms": [
+        {
+          "id": "elevator_lobby_2f",
+          "name": "エレベーターロビー",
+          "bounds": { "x": 18, "y": 0, "w": 6, "h": 6 },
+          "type": "circulation",
+          "accessibility": true,
+          "features": ["待合ベンチ", "案内表示"]
+        },
+        {
+          "id": "onsen_entrance_room",
+          "name": "大浴場入口",
+          "bounds": { "x": 28, "y": 8, "w": 6, "h": 4 },
+          "type": "facility",
+          "accessibility": true,
+          "features": ["受付", "脱衣所入口", "タオル貸出"]
+        },
+        {
+          "id": "onsen_men_room",
+          "name": "男湯",
+          "bounds": { "x": 32, "y": 5, "w": 8, "h": 6 },
+          "type": "facility",
+          "accessibility": false,
+          "features": ["内湯", "露天風呂", "サウナ", "水風呂", "脱衣所"]
+        },
+        {
+          "id": "onsen_women_room",
+          "name": "女湯",
+          "bounds": { "x": 32, "y": 11, "w": 8, "h": 6 },
+          "type": "facility",
+          "accessibility": false,
+          "features": ["内湯", "露天風呂", "美肌湯", "ジャグジー", "脱衣所"]
+        },
+        {
+          "id": "rest_room_2f",
+          "name": "休憩所",
+          "bounds": { "x": 15, "y": 12, "w": 8, "h": 6 },
+          "type": "relaxation",
+          "accessibility": true,
+          "features": ["マッサージチェア", "自販機", "テレビ", "雑誌コーナー"]
+        },
+        {
+          "id": "toilet_2f_room",
+          "name": "お手洗い（2階）",
+          "bounds": { "x": 10, "y": 17, "w": 4, "h": 3 },
+          "type": "facility",
+          "accessibility": true,
+          "features": ["男性用", "女性用", "多目的トイレ"]
+        }
+      ],
+      "doors": [
+        {
+          "id": "elevator_door_2f",
+          "position": { "x": 20, "y": 2 },
+          "width": 1.2,
+          "type": "elevator",
+          "accessibility": true,
+          "connects": ["elevator_lobby_2f", "elevator_shaft"]
+        },
+        {
+          "id": "onsen_entrance_door",
+          "position": { "x": 30, "y": 10 },
+          "width": 1.5,
+          "type": "swing",
+          "accessibility": true,
+          "connects": ["elevator_lobby_2f", "onsen_entrance_room"]
+        },
+        {
+          "id": "onsen_men_door",
+          "position": { "x": 35, "y": 8 },
+          "width": 1.0,
+          "type": "curtain",
+          "accessibility": false,
+          "connects": ["onsen_entrance_room", "onsen_men_room"],
+          "restrictions": ["男性専用"]
+        },
+        {
+          "id": "onsen_women_door",
+          "position": { "x": 35, "y": 12 },
+          "width": 1.0,
+          "type": "curtain",
+          "accessibility": false,
+          "connects": ["onsen_entrance_room", "onsen_women_room"],
+          "restrictions": ["女性専用"]
+        }
+      ],
+      "navigation": {
+        "walkableAreas": [
+          { "bounds": { "x": 18, "y": 0, "w": 15, "h": 18 }, "surface": "wood" },
+          { "bounds": { "x": 10, "y": 10, "w": 20, "h": 8 }, "surface": "tile" }
+        ],
+        "obstacles": [
+          { "position": { "x": 20, "y": 8 }, "size": { "w": 1, "h": 1 }, "type": "pillar" },
+          { "position": { "x": 16, "y": 14 }, "size": { "w": 2, "h": 1 }, "type": "massage_chair" }
+        ],
+        "landmarks": [
+          { "id": "onsen_noren", "position": { "x": 30, "y": 10 }, "description": "温泉のれん" },
+          { "id": "rest_area_sign", "position": { "x": 19, "y": 15 }, "description": "休憩所案内" }
+        ]
+      }
+    },
+    "-1": {
+      "name": "地下1階",
+      "elevation": -3.0,
+      "bounds": {
+        "min": { "x": -20, "y": -30 },
+        "max": { "x": 20, "y": 5 }
+      },
+      "walls": [
+        {
+          "id": "wall_b1_south",
+          "start": { "x": -20, "y": -30 },
+          "end": { "x": 20, "y": -30 },
+          "thickness": 0.3,
+          "material": "concrete",
+          "height": 2.5
+        },
+        {
+          "id": "wall_b1_north",
+          "start": { "x": -20, "y": 5 },
+          "end": { "x": 20, "y": 5 },
+          "thickness": 0.3,
+          "material": "concrete",
+          "height": 2.5
+        },
+        {
+          "id": "wall_b1_west",
+          "start": { "x": -20, "y": -30 },
+          "end": { "x": -20, "y": 5 },
+          "thickness": 0.3,
+          "material": "concrete",
+          "height": 2.5
+        },
+        {
+          "id": "wall_b1_east",
+          "start": { "x": 20, "y": -30 },
+          "end": { "x": 20, "y": 5 },
+          "thickness": 0.3,
+          "material": "concrete",
+          "height": 2.5
+        }
+      ],
+      "rooms": [
+        {
+          "id": "parking_entrance_room",
+          "name": "駐車場入口",
+          "bounds": { "x": 3, "y": -12, "w": 4, "h": 4 },
+          "type": "entrance",
+          "accessibility": true,
+          "features": ["自動ゲート", "発券機", "案内表示"]
+        },
+        {
+          "id": "parking_main_area",
+          "name": "駐車場メインエリア",
+          "bounds": { "x": -15, "y": -25, "w": 30, "h": 20 },
+          "type": "parking",
+          "accessibility": true,
+          "features": ["駐車スペース50台", "EV充電スタンド", "セキュリティカメラ"]
+        },
+        {
+          "id": "storage_room",
+          "name": "倉庫",
+          "bounds": { "x": -15, "y": -8, "w": 8, "h": 6 },
+          "type": "storage",
+          "accessibility": false,
+          "features": ["清掃用具", "備品", "設備機器"],
+          "restrictions": ["スタッフ専用"]
+        }
+      ],
+      "doors": [
+        {
+          "id": "parking_entrance_door",
+          "position": { "x": 5, "y": -10 },
+          "width": 3.0,
+          "type": "automatic_gate",
+          "accessibility": true,
+          "connects": ["outside", "parking_entrance_room"]
+        },
+        {
+          "id": "storage_door",
+          "position": { "x": -11, "y": -5 },
+          "width": 1.0,
+          "type": "security",
+          "accessibility": false,
+          "connects": ["parking_main_area", "storage_room"],
+          "restrictions": ["スタッフ専用", "キーカード必要"]
+        }
+      ],
+      "navigation": {
+        "walkableAreas": [
+          { "bounds": { "x": -15, "y": -25, "w": 30, "h": 30 }, "surface": "concrete" }
+        ],
+        "obstacles": [
+          { "position": { "x": -10, "y": -15 }, "size": { "w": 1, "h": 1 }, "type": "pillar" },
+          { "position": { "x": 0, "y": -15 }, "size": { "w": 1, "h": 1 }, "type": "pillar" },
+          { "position": { "x": 10, "y": -15 }, "size": { "w": 1, "h": 1 }, "type": "pillar" }
+        ],
+        "landmarks": [
+          { "id": "entrance_gate", "position": { "x": 5, "y": -10 }, "description": "駐車場入口ゲート" },
+          { "id": "ev_charging", "position": { "x": -5, "y": -20 }, "description": "EV充電スタンド" }
+        ]
+      }
+    }
+  },
+  "connections": {
+    "elevator_shaft": {
+      "type": "vertical",
+      "floors": ["-1", "1", "2"],
+      "position": { "x": 20, "y": 2 },
+      "capacity": 8,
+      "speed": "1.5m/s",
+      "accessibility": true
+    },
+    "stairs_shaft": {
+      "type": "vertical",
+      "floors": ["1", "2"],
+      "position": { "x": 22, "y": 2 },
+      "accessibility": false,
+      "steps": 20
+    }
+  },
+  "safety": {
+    "fire_exits": [
+      { "floor": 1, "position": { "x": -3, "y": 18 }, "type": "emergency" },
+      { "floor": 2, "position": { "x": -3, "y": 18 }, "type": "emergency" },
+      { "floor": -1, "position": { "x": 18, "y": 3 }, "type": "emergency" }
+    ],
+    "fire_extinguishers": [
+      { "floor": 1, "position": { "x": 5, "y": 3 } },
+      { "floor": 1, "position": { "x": 15, "y": 12 } },
+      { "floor": 2, "position": { "x": 21, "y": 3 } },
+      { "floor": 2, "position": { "x": 31, "y": 9 } }
+    ],
+    "aed_locations": [
+      { "floor": 1, "position": { "x": 12, "y": 5 }, "description": "フロント横" },
+      { "floor": 2, "position": { "x": 30, "y": 10 }, "description": "大浴場入口" }
+    ]
+  }
+}
