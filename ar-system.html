@@ -83,55 +83,6 @@
             min-height: 1.5rem;
         }
 
-        /* 権限要求画面 */
-        .permission-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .permission-screen.active {
-            display: flex;
-        }
-
-        .permission-content h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .permission-content p {
-            font-size: 1rem;
-            margin-bottom: 2rem;
-            line-height: 1.5;
-        }
-
-        .permission-button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            padding: 12px 24px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .permission-button:hover {
-            background: #45a049;
-            transform: scale(1.05);
-        }
-
         /* 目的地選択画面 */
         #destination-screen {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
@@ -285,7 +236,7 @@
             position: absolute !important;
             top: 20px !important;
             left: 20px !important;
-            right: 80px !important;
+            right: 20px !important;
             background: rgba(0, 0, 0, 0.8) !important;
             color: white !important;
             padding: 1rem !important;
@@ -343,80 +294,6 @@
             width: 40px;
             height: 40px;
             margin: 1rem auto;
-        }
-
-        /* コンパス表示（改良版） */
-        .compass {
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            width: 70px;
-            height: 70px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 3px solid white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.9rem;
-            font-weight: bold;
-            pointer-events: auto;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .compass-needle {
-            position: absolute;
-            width: 3px;
-            height: 25px;
-            background: linear-gradient(to top, transparent, red);
-            transform-origin: bottom center;
-            transition: transform 0.1s ease;
-            border-radius: 2px;
-        }
-
-        .compass-directions {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .compass-n {
-            position: absolute;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: red;
-        }
-
-        .compass-s {
-            position: absolute;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.7rem;
-            color: #ccc;
-        }
-
-        .compass-e {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.7rem;
-            color: #ccc;
-        }
-
-        .compass-w {
-            position: absolute;
-            left: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.7rem;
-            color: #ccc;
         }
 
         /* デバッグパネル */
@@ -521,6 +398,75 @@
             to { transform: scale(1); opacity: 1; }
         }
 
+        /* コンパス表示（修正版） */
+        .compass {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            pointer-events: auto;
+            font-weight: bold;
+        }
+
+        .compass-needle {
+            position: absolute;
+            width: 3px;
+            height: 25px;
+            background: linear-gradient(to top, #ff0000, #ff6666);
+            transform-origin: bottom center;
+            transition: transform 0.1s ease;
+            border-radius: 1.5px;
+        }
+
+        .compass-directions {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .compass-n {
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff6666;
+            font-weight: bold;
+        }
+
+        .compass-s {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+        }
+
+        .compass-e {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+        }
+
+        .compass-w {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+        }
+
         /* モバイル専用調整 */
         @media (max-width: 768px) {
             .destination-content h2 {
@@ -559,15 +505,11 @@
             .compass {
                 width: 60px;
                 height: 60px;
-                right: 10px;
+                right: 15px;
             }
 
             .compass-needle {
                 height: 20px;
-            }
-
-            .ar-info {
-                right: 75px !important;
             }
         }
 
@@ -580,15 +522,6 @@
     </style>
 </head>
 <body>
-    <!-- 権限要求画面 -->
-    <div id="permission-screen" class="permission-screen">
-        <div class="permission-content">
-            <h2>🧭 方向センサーのアクセス許可</h2>
-            <p>正確なナビゲーションのため、<br>デバイスの方向センサーへのアクセスを許可してください。</p>
-            <button class="permission-button" onclick="requestAndContinue()">許可する</button>
-        </div>
-    </div>
-
     <!-- 初期化画面 -->
     <div id="loading-screen" class="screen active">
         <div class="loading-content">
@@ -629,10 +562,10 @@
                 <p id="distance-info">距離: 計算中...</p>
                 <p id="direction-info">方向: 取得中...</p>
                 <p id="camera-status">📷 カメラ: 起動中...</p>
-                <p id="orientation-status">🧭 方向: 検出中...</p>
+                <p id="device-direction">🧭 方向: 0°</p>
             </div>
             
-            <!-- 改良版コンパス -->
+            <!-- コンパス（修正版） -->
             <div class="compass" id="compass">
                 <div class="compass-directions">
                     <div class="compass-n">N</div>
@@ -669,10 +602,9 @@
         let arCanvas = null;
         let arContext = null;
         let debugMinimized = false;
-        let currentDirection = 0;
-        let currentDistance = 0;
-        let orientationPermissionGranted = false;
-        let lastUpdateTime = 0;
+        let currentDirection = 0; // 現在のデバイス方向
+        let targetBearing = 0; // 目的地への方向
+        let arrowUpdateInterval = null;
         
         let debugInfo = {
             initialization: 'pending',
@@ -682,8 +614,7 @@
             gps: 'pending',
             cards: 'pending',
             camera: 'pending',
-            video: 'pending',
-            orientation: 'pending'
+            video: 'pending'
         };
 
         // エントランス位置（QRコード開始点）
@@ -693,13 +624,7 @@
             accuracy: 5
         };
 
-        // 建物中央座標（参考用）
-        const BUILDING_CENTER = {
-            lat: 32.76656645690299,
-            lng: 129.8575246988253
-        };
-
-        // 目的地データ（エントランス基準で北向きに配置）
+        // 目的地データ
         const destinations = [
             {
                 id: 'lobby',
@@ -780,61 +705,8 @@
             console.log('🚀 ARナビゲーションシステム起動');
             setupDebugPanel();
             updateDebugInfo();
-            
-            // 権限チェックから開始
-            checkOrientationPermission();
+            initializeSystem();
         });
-
-        // 方向センサー権限確認
-        async function checkOrientationPermission() {
-            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                // iOS 13+ の場合
-                document.getElementById('permission-screen').classList.add('active');
-                document.getElementById('loading-screen').classList.remove('active');
-            } else {
-                // Android / 従来のブラウザ
-                orientationPermissionGranted = true;
-                initializeSystem();
-            }
-        }
-
-        // 権限要求と続行
-        async function requestAndContinue() {
-            try {
-                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    const permission = await DeviceOrientationEvent.requestPermission();
-                    if (permission === 'granted') {
-                        orientationPermissionGranted = true;
-                        console.log('✅ iOS方向センサー許可');
-                        debugInfo.orientation = 'ok';
-                    } else {
-                        console.warn('❌ iOS方向センサー拒否');
-                        debugInfo.orientation = 'warning';
-                    }
-                } else {
-                    orientationPermissionGranted = true;
-                    debugInfo.orientation = 'ok';
-                }
-                
-                updateDebugInfo();
-                
-                // 権限画面を隠して初期化開始
-                document.getElementById('permission-screen').classList.remove('active');
-                document.getElementById('loading-screen').classList.add('active');
-                
-                initializeSystem();
-                
-            } catch (error) {
-                console.error('権限要求エラー:', error);
-                debugInfo.orientation = 'error';
-                updateDebugInfo();
-                
-                // エラーでも続行
-                document.getElementById('permission-screen').classList.remove('active');
-                document.getElementById('loading-screen').classList.add('active');
-                initializeSystem();
-            }
-        }
 
         function setupDebugPanel() {
             const debugPanel = document.getElementById('debug-panel');
@@ -887,7 +759,6 @@
                 debugInfo.initialization = 'ok';
                 updateDebugInfo();
 
-                // 初期化完了後にデバッグパネルを最小化
                 setTimeout(() => {
                     minimizeDebugPanel();
                 }, 2000);
@@ -903,6 +774,7 @@
             }
         }
 
+        // 方向センサー初期化（修正版）
         async function initializeSensors() {
             return new Promise((resolve, reject) => {
                 try {
@@ -932,9 +804,57 @@
                         resolve();
                     }
 
-                    // 方向センサー設定（重要な修正）
-                    if (orientationPermissionGranted) {
-                        setupOrientationTracking();
+                    // デバイス方向センサー（修正版）
+                    function handleOrientation(event) {
+                        if (event.alpha !== null) {
+                            // 修正：正しい方向計算
+                            const rawDirection = event.alpha;
+                            currentDirection = normalizeDirection(rawDirection);
+                            
+                            deviceOrientation = {
+                                alpha: rawDirection,
+                                beta: event.beta,
+                                gamma: event.gamma,
+                                normalized: currentDirection
+                            };
+                            
+                            // UI即座更新
+                            updateCompass(currentDirection);
+                            updateDeviceDirectionDisplay(currentDirection);
+                            
+                            // AR矢印も即座更新
+                            if (isARActive && selectedDestination) {
+                                updateArrowImmediate();
+                            }
+                        }
+                    }
+
+                    // 方向正規化関数（修正版）
+                    function normalizeDirection(alpha) {
+                        if (alpha === null) return 0;
+                        // 正しい方向計算：右回転で正の値
+                        let direction = (360 - alpha) % 360;
+                        return Math.round(direction);
+                    }
+
+                    if (window.DeviceOrientationEvent) {
+                        // iOS 13+の権限要求
+                        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                            DeviceOrientationEvent.requestPermission()
+                                .then(permissionState => {
+                                    if (permissionState === 'granted') {
+                                        window.addEventListener('deviceorientation', handleOrientation, true);
+                                        console.log('✅ デバイス方向センサー許可（iOS）');
+                                    } else {
+                                        console.warn('⚠️ デバイス方向センサー拒否（iOS）');
+                                    }
+                                })
+                                .catch(console.error);
+                        } else {
+                            // Android等
+                            window.addEventListener('deviceorientation', handleOrientation, true);
+                            console.log('✅ デバイス方向センサー設定（Android）');
+                        }
                     }
 
                 } catch (error) {
@@ -943,109 +863,21 @@
             });
         }
 
-        // 方向センサー追跡設定（完全修正版）
-        function setupOrientationTracking() {
-            console.log('🧭 方向センサー追跡開始');
-            
-            // デバイス方向イベント（高頻度更新）
-            window.addEventListener('deviceorientation', handleOrientationChange, { passive: true });
-            
-            // 代替: デバイスモーションイベント
-            window.addEventListener('deviceorientationabsolute', handleOrientationChange, { passive: true });
-            
-            // テスト用方向データ生成（センサーが動作しない場合の代替）
-            let testDirection = 0;
-            const testInterval = setInterval(() => {
-                if (deviceOrientation && deviceOrientation.alpha !== null) {
-                    // 実際のセンサーが動作している場合は停止
-                    clearInterval(testInterval);
-                    return;
-                }
-                
-                // テスト用回転（デバッグ用）
-                testDirection = (testDirection + 5) % 360;
-                handleOrientationChange({
-                    alpha: testDirection,
-                    beta: 0,
-                    gamma: 0,
-                    absolute: false
-                });
-            }, 500);
-            
-            // 10秒後にテスト停止
-            setTimeout(() => {
-                clearInterval(testInterval);
-            }, 10000);
-        }
-
-        // 方向変化ハンドラー（最重要修正）
-        function handleOrientationChange(event) {
-            const now = Date.now();
-            if (now - lastUpdateTime < 50) return; // 50ms未満の更新は無視
-            lastUpdateTime = now;
-            
-            if (event.alpha !== null) {
-                deviceOrientation = {
-                    alpha: event.alpha,
-                    beta: event.beta,
-                    gamma: event.gamma,
-                    absolute: event.absolute || false
-                };
-                
-                currentDirection = Math.round(event.alpha);
-                
-                // コンパス更新
-                updateCompass(currentDirection);
-                
-                // AR矢印更新
-                updateARArrow();
-                
-                // 方向状態更新
-                if (debugInfo.orientation !== 'ok') {
-                    debugInfo.orientation = 'ok';
-                    updateDebugInfo();
-                }
-                
-                // UI状態表示更新
-                const orientationStatus = document.getElementById('orientation-status');
-                if (orientationStatus) {
-                    orientationStatus.textContent = `🧭 方向: ${currentDirection}°`;
-                }
-                
-                console.log(`🧭 方向更新: ${currentDirection}°`);
-            }
-        }
-
-        // コンパス更新（改良版）
+        // コンパス更新（修正版）
         function updateCompass(direction) {
             const compassNeedle = document.getElementById('compass-needle');
             if (compassNeedle) {
-                // 北に向ける針の回転
-                const needleRotation = -direction;
-                compassNeedle.style.transform = `rotate(${needleRotation}deg)`;
-                
-                console.log(`🧭 コンパス更新: ${direction}° → 針回転: ${needleRotation}°`);
+                // 修正：正しい北向き表示
+                compassNeedle.style.transform = `rotate(${direction}deg)`;
             }
         }
 
-        // AR矢印更新（リアルタイム対応）
-        function updateARArrow() {
-            if (!isARActive || !selectedDestination || !arContext || !userPosition) {
-                return;
+        // デバイス方向表示更新
+        function updateDeviceDirectionDisplay(direction) {
+            const deviceDirectionElement = document.getElementById('device-direction');
+            if (deviceDirectionElement) {
+                deviceDirectionElement.textContent = `🧭 方向: ${direction}°`;
             }
-            
-            const bearing = calculateBearing(
-                userPosition.lat, userPosition.lng,
-                selectedDestination.coordinates.lat, selectedDestination.coordinates.lng
-            );
-            
-            const distance = calculateDistance(
-                userPosition.lat, userPosition.lng,
-                selectedDestination.coordinates.lat, selectedDestination.coordinates.lng
-            );
-            
-            currentDistance = distance;
-            drawARArrow(bearing, distance);
         }
 
         async function prepareDestinationScreen() {
@@ -1123,7 +955,6 @@
             return directions[index];
         }
 
-        // 画面切り替え制御
         function switchScreen(screenName) {
             console.log(`🔄 画面切り替え: ${currentScreen} → ${screenName}`);
             
@@ -1154,10 +985,15 @@
             console.log(`✅ 画面切り替え完了: ${screenName}`);
         }
 
-        // 目的地選択処理
         function selectDestination(destination) {
             console.log('🎯 目的地選択:', destination.name);
             selectedDestination = destination;
+            
+            // 目的地への方向計算
+            targetBearing = calculateBearing(
+                userPosition.lat, userPosition.lng,
+                selectedDestination.coordinates.lat, selectedDestination.coordinates.lng
+            );
             
             document.getElementById('current-destination').textContent = 
                 `目的地: ${destination.name}`;
@@ -1166,7 +1002,6 @@
             switchScreen('ar');
         }
 
-        // カメラ初期化メッセージ表示
         function showCameraLoading() {
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'camera-loading';
@@ -1186,7 +1021,6 @@
             }
         }
 
-        // ARキャンバス初期化
         function initializeARCanvas() {
             arCanvas = document.getElementById('ar-canvas');
             if (!arCanvas) return false;
@@ -1204,9 +1038,9 @@
             return true;
         }
 
-        // 改良版3D矢印描画（リアルタイム対応）
-        function drawARArrow(targetBearing, distance) {
-            if (!arContext) return;
+        // AR矢印描画（修正版）
+        function drawARArrow(distance) {
+            if (!arContext || !selectedDestination) return;
             
             arContext.clearRect(0, 0, arCanvas.width, arCanvas.height);
             
@@ -1214,13 +1048,9 @@
             const centerY = arCanvas.height / 2 + 50;
             const arrowLength = Math.min(120, Math.max(40, 250 - distance * 2));
             
-            // デバイス方向を考慮した矢印方向計算
-            let adjustedDirection = targetBearing;
-            if (deviceOrientation && deviceOrientation.alpha !== null) {
-                adjustedDirection = targetBearing - deviceOrientation.alpha;
-            }
-            
-            const angleRad = (adjustedDirection - 90) * Math.PI / 180;
+            // 修正：正しい相対方向計算
+            const relativeBearing = (targetBearing - currentDirection + 360) % 360;
+            const angleRad = (relativeBearing - 90) * Math.PI / 180;
             
             arContext.save();
             arContext.translate(centerX, centerY);
@@ -1232,7 +1062,7 @@
             arContext.shadowOffsetX = 4;
             arContext.shadowOffsetY = 4;
             
-            // グラデーション矢印
+            // グラデーション
             const gradient = arContext.createLinearGradient(0, -arrowLength, 0, arrowLength);
             gradient.addColorStop(0, '#FF6B6B');
             gradient.addColorStop(0.5, '#FF4444');
@@ -1242,7 +1072,7 @@
             arContext.strokeStyle = '#AA0000';
             arContext.lineWidth = 4;
             
-            // 3D矢印形状
+            // 矢印形状
             arContext.beginPath();
             arContext.moveTo(0, -arrowLength);
             arContext.lineTo(-25, -arrowLength + 40);
@@ -1256,7 +1086,7 @@
             arContext.fill();
             arContext.stroke();
             
-            // ハイライト効果
+            // ハイライト
             const highlightGradient = arContext.createLinearGradient(-12, -arrowLength, 12, arrowLength);
             highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
             highlightGradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.1)');
@@ -1267,7 +1097,7 @@
             
             arContext.restore();
             
-            // 距離と方向テキスト
+            // 距離・方向テキスト
             arContext.fillStyle = 'white';
             arContext.font = 'bold 18px Arial';
             arContext.textAlign = 'center';
@@ -1285,7 +1115,18 @@
             arContext.fillText(directionText, centerX, centerY + 110);
         }
 
-        // カメラ初期化
+        // 矢印即座更新
+        function updateArrowImmediate() {
+            if (!isARActive || !selectedDestination || !userPosition) return;
+            
+            const distance = calculateDistance(
+                userPosition.lat, userPosition.lng,
+                selectedDestination.coordinates.lat, selectedDestination.coordinates.lng
+            );
+
+            drawARArrow(distance);
+        }
+
         async function initializeCamera() {
             try {
                 console.log('📱 カメラ初期化開始');
@@ -1379,26 +1220,44 @@
                 selectedDestination.coordinates.lat, selectedDestination.coordinates.lng
             );
 
-            const bearing = calculateBearing(
+            targetBearing = calculateBearing(
                 userPosition.lat, userPosition.lng,
                 selectedDestination.coordinates.lat, selectedDestination.coordinates.lng
             );
 
-            currentDistance = distance;
-
             document.getElementById('distance-info').textContent = 
                 `距離: 約${Math.round(distance)}m`;
             document.getElementById('direction-info').textContent = 
-                `方向: ${Math.round(bearing)}° (${getDirectionText(bearing)})`;
+                `方向: ${Math.round(targetBearing)}° (${getDirectionText(targetBearing)})`;
 
             if (arContext) {
-                drawARArrow(bearing, distance);
+                drawARArrow(distance);
             }
 
             console.log('🧭 ナビゲーション開始');
+            
+            // 高頻度矢印更新開始
+            startHighFrequencyArrowUpdate(distance);
         }
 
-        // ユーティリティ関数
+        // 高頻度（60FPS）矢印更新
+        function startHighFrequencyArrowUpdate(distance) {
+            if (arrowUpdateInterval) {
+                cancelAnimationFrame(arrowUpdateInterval);
+            }
+            
+            function updateLoop() {
+                if (!isARActive || !selectedDestination) {
+                    return;
+                }
+                
+                updateArrowImmediate();
+                arrowUpdateInterval = requestAnimationFrame(updateLoop);
+            }
+            
+            updateLoop();
+        }
+
         function updateStatus(message) {
             const statusElement = document.getElementById('status-message');
             if (statusElement) {
@@ -1423,10 +1282,6 @@
                 <div class="debug-item">
                     <span class="debug-status ${debugInfo.sensors}"></span>
                     センサー: ${getStatusText(debugInfo.sensors)}
-                </div>
-                <div class="debug-item">
-                    <span class="debug-status ${debugInfo.orientation}"></span>
-                    方向センサー: ${getStatusText(debugInfo.orientation)}
                 </div>
                 <div class="debug-item">
                     <span class="debug-status ${debugInfo.ui}"></span>
@@ -1459,13 +1314,13 @@
                     選択目的地: ${selectedDestination ? selectedDestination.name : '未選択'}
                 </div>
                 <div class="debug-item">
-                    位置: エントランス
-                </div>
-                <div class="debug-item">
                     デバイス方向: ${currentDirection}°
                 </div>
                 <div class="debug-item">
-                    方向センサー: ${orientationPermissionGranted ? '許可' : '未許可'}
+                    目的地方向: ${Math.round(targetBearing)}°
+                </div>
+                <div class="debug-item">
+                    相対方向: ${Math.round((targetBearing - currentDirection + 360) % 360)}°
                 </div>
             `;
         }
@@ -1510,8 +1365,12 @@
             return (Math.atan2(y, x) * 180/Math.PI + 360) % 360;
         }
 
-        // AR制御関数
         function goBackToDestinations() {
+            if (arrowUpdateInterval) {
+                cancelAnimationFrame(arrowUpdateInterval);
+                arrowUpdateInterval = null;
+            }
+            
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
                 cameraStream = null;
@@ -1528,6 +1387,7 @@
             
             isARActive = false;
             selectedDestination = null;
+            targetBearing = 0;
             debugInfo.camera = 'pending';
             debugInfo.video = 'pending';
             updateDebugInfo();
@@ -1540,7 +1400,6 @@
             }
         }
 
-        // エラーハンドリング
         window.addEventListener('error', function(e) {
             console.error('JavaScriptエラー:', e.error);
             debugInfo.initialization = 'error';
@@ -1548,9 +1407,14 @@
         });
 
         window.addEventListener('beforeunload', function() {
+            if (arrowUpdateInterval) {
+                cancelAnimationFrame(arrowUpdateInterval);
+            }
+            
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
             }
+            
             if (isARActive) {
                 isARActive = false;
             }
