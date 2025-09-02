@@ -30,7 +30,7 @@
         }
 
         /* =================================
-           メイン画面制御（強化版）
+           メイン画面制御
         ================================= */
         .screen {
             position: fixed !important;
@@ -92,7 +92,7 @@
         }
 
         /* =================================
-           目的地選択画面（完全修正版）
+           目的地選択画面
         ================================= */
         #destination-screen {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
@@ -118,7 +118,6 @@
             padding: 0 1rem;
         }
 
-        /* Grid レイアウト完全修正 */
         .destination-grid {
             display: grid !important;
             grid-template-columns: 1fr !important;
@@ -132,7 +131,6 @@
             opacity: 1 !important;
         }
 
-        /* カード表示完全保証 */
         .destination-card {
             display: block !important;
             visibility: visible !important;
@@ -179,12 +177,18 @@
         }
 
         /* =================================
-           AR画面
+           AR画面（完全修正版）
         ================================= */
         #ar-screen {
             background: black !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
         }
 
+        /* AR.jsシーン完全表示保証 */
         a-scene {
             position: fixed !important;
             top: 0 !important;
@@ -192,8 +196,12 @@
             width: 100vw !important;
             height: 100vh !important;
             z-index: 1 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
+        /* ARオーバーレイUI */
         .ar-overlay {
             position: fixed !important;
             top: 0 !important;
@@ -245,7 +253,54 @@
         }
 
         /* =================================
-           デバッグパネル（強化版）
+           カメラ権限要求画面
+        ================================= */
+        .camera-permission-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.9) !important;
+            color: white !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            z-index: 9999 !important;
+            text-align: center !important;
+            padding: 2rem !important;
+        }
+
+        .camera-permission-content h3 {
+            font-size: 1.5rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .camera-permission-content p {
+            font-size: 1rem !important;
+            margin-bottom: 2rem !important;
+            line-height: 1.5 !important;
+        }
+
+        .permission-button {
+            background: #4CAF50 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 25px !important;
+            padding: 12px 24px !important;
+            font-size: 1rem !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .permission-button:hover {
+            background: #45a049 !important;
+            transform: scale(1.05) !important;
+        }
+
+        /* =================================
+           デバッグパネル
         ================================= */
         .debug-panel {
             position: fixed !important;
@@ -364,7 +419,6 @@
             }
         }
 
-        /* タッチデバイス専用 */
         @media (hover: none) and (pointer: coarse) {
             .destination-card:active {
                 transform: scale(0.98) !important;
@@ -391,9 +445,7 @@
     <div id="destination-screen" class="screen">
         <div class="destination-content">
             <h2>🎯 目的地を選択してください</h2>
-            <div class="destination-grid" id="destination-grid">
-                <!-- 目的地カードはJavaScriptで動的生成 -->
-            </div>
+            <div class="destination-grid" id="destination-grid"></div>
         </div>
     </div>
 
@@ -406,7 +458,9 @@
             embedded 
             arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
             vr-mode-ui="enabled: false"
-            device-orientation-permission-ui="enabled: false">
+            device-orientation-permission-ui="enabled: false"
+            renderer="antialias: true; alpha: true; precision: medium;"
+            background="transparent">
             
             <a-assets>
                 <a-box id="nav-arrow" geometry="primitive: box; width: 0.5; height: 0.1; depth: 2" 
@@ -441,9 +495,7 @@
     ================================= -->
     <div class="debug-panel" id="debug-panel">
         <h4>🔧 システム状態</h4>
-        <div id="debug-content">
-            <!-- デバッグ情報はJavaScriptで更新 -->
-        </div>
+        <div id="debug-content"></div>
     </div>
 
     <script>
@@ -456,18 +508,18 @@
         let deviceOrientation = null;
         let isARActive = false;
         let destinationCardsCount = 0;
+        let cameraStream = null;
         
-        // デバッグ用状態管理
         let debugInfo = {
             initialization: 'pending',
             sensors: 'pending',
             ui: 'pending',
             ar: 'pending',
             gps: 'pending',
-            cards: 'pending'
+            cards: 'pending',
+            camera: 'pending'
         };
 
-        // 目的地データ
         const destinations = [
             {
                 id: 'onsen',
@@ -625,7 +677,6 @@
                     return;
                 }
 
-                // グリッドの強制表示設定
                 grid.style.display = 'grid';
                 grid.style.visibility = 'visible';
                 grid.style.opacity = '1';
@@ -639,7 +690,6 @@
                         grid.appendChild(card);
                         destinationCardsCount++;
                         
-                        // カード表示の強制設定
                         setTimeout(() => {
                             card.style.display = 'block';
                             card.style.visibility = 'visible';
@@ -664,7 +714,6 @@
             card.className = 'destination-card scale-in';
             card.onclick = () => selectDestination(destination);
             
-            // 強制表示スタイル
             card.style.display = 'block';
             card.style.visibility = 'visible';
             card.style.opacity = '1';
@@ -725,16 +774,120 @@
             switchScreen('ar');
         }
 
+        // =================================
+        // カメラ権限要求
+        // =================================
+        async function requestCameraPermission() {
+            try {
+                debugInfo.camera = 'progress';
+                updateDebugInfo();
+                
+                console.log('📷 カメラ権限要求開始');
+                
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                });
+                
+                console.log('✅ カメラアクセス許可済み');
+                debugInfo.camera = 'ok';
+                updateDebugInfo();
+                
+                // ストリームを保存（後でAR.jsが使用）
+                cameraStream = stream;
+                
+                return true;
+            } catch (error) {
+                console.error('❌ カメラアクセス拒否:', error);
+                debugInfo.camera = 'error';
+                updateDebugInfo();
+                
+                showCameraError('カメラへのアクセスが許可されていません。\nブラウザの設定でカメラアクセスを許可してください。');
+                return false;
+            }
+        }
+
+        function showCameraError(message) {
+            const errorOverlay = document.createElement('div');
+            errorOverlay.className = 'camera-permission-overlay';
+            errorOverlay.innerHTML = `
+                <div class="camera-permission-content">
+                    <h3>📷 カメラアクセスが必要です</h3>
+                    <p>${message}</p>
+                    <button class="permission-button" onclick="location.reload()">
+                        再試行
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(errorOverlay);
+        }
+
+        // =================================
+        // AR初期化
+        // =================================
         async function initializeAR() {
             try {
                 console.log('📱 AR初期化開始');
-                isARActive = true;
-                console.log('✅ AR初期化完了');
-                startNavigation();
+                
+                // 1. カメラ権限確認
+                const cameraAllowed = await requestCameraPermission();
+                if (!cameraAllowed) {
+                    throw new Error('カメラアクセスが許可されていません');
+                }
+
+                // 2. AR.js シーン取得
+                const arScene = document.getElementById('ar-scene');
+                if (!arScene) {
+                    throw new Error('AR.jsシーンが見つかりません');
+                }
+                
+                // 3. シーン表示確実実行
+                arScene.style.display = 'block';
+                arScene.style.visibility = 'visible';
+                arScene.style.opacity = '1';
+                arScene.style.zIndex = '1';
+                
+                // 4. AR.js初期化完了待機
+                return new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error('AR.js初期化タイムアウト'));
+                    }, 10000);
+
+                    // シーン準備完了イベント
+                    arScene.addEventListener('loaded', () => {
+                        clearTimeout(timeout);
+                        console.log('✅ AR.jsシーン読み込み完了');
+                        
+                        // カメラ初期化待機
+                        setTimeout(() => {
+                            isARActive = true;
+                            debugInfo.ar = 'ok';
+                            updateDebugInfo();
+                            startNavigation();
+                            resolve();
+                        }, 2000);
+                    });
+
+                    // エラーハンドリング
+                    arScene.addEventListener('arjs-video-loaded', () => {
+                        console.log('✅ AR.js カメラ映像読み込み完了');
+                    });
+
+                    arScene.addEventListener('arjs-scene-initialized', () => {
+                        console.log('✅ AR.jsシーン初期化完了');
+                    });
+                });
                 
             } catch (error) {
                 console.error('AR初期化エラー:', error);
-                alert('カメラへのアクセスに失敗しました。\nブラウザの設定でカメラアクセスを許可してください。');
+                debugInfo.camera = 'error';
+                debugInfo.ar = 'error';
+                updateDebugInfo();
+                showCameraError(error.message);
             }
         }
 
@@ -757,7 +910,7 @@
             document.getElementById('distance-info').textContent = 
                 `距離: 約${Math.round(distance)}m`;
             document.getElementById('direction-info').textContent = 
-                `方向: ${bearing}°`;
+                `方向: ${Math.round(bearing)}°`;
 
             console.log('🧭 ナビゲーション開始');
         }
@@ -793,6 +946,10 @@
                 <div class="debug-item">
                     <span class="debug-status ${debugInfo.cards}"></span>
                     目的地カード: ${destinationCardsCount}個
+                </div>
+                <div class="debug-item">
+                    <span class="debug-status ${debugInfo.camera}"></span>
+                    カメラ: ${getStatusText(debugInfo.camera)}
                 </div>
                 <div class="debug-item">
                     <span class="debug-status ${debugInfo.ar}"></span>
@@ -855,8 +1012,16 @@
         // AR制御関数
         // =================================
         function goBackToDestinations() {
+            // カメラストリーム停止
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
             isARActive = false;
             selectedDestination = null;
+            debugInfo.camera = 'pending';
+            updateDebugInfo();
             switchScreen('destination');
         }
 
@@ -876,24 +1041,13 @@
         });
 
         window.addEventListener('beforeunload', function() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
             if (isARActive) {
                 isARActive = false;
             }
         });
-
-        // =================================
-        // 表示確認用定期チェック
-        // =================================
-        setInterval(() => {
-            if (currentScreen === 'destination') {
-                const grid = document.getElementById('destination-grid');
-                const cards = grid ? grid.children.length : 0;
-                if (cards !== destinationCardsCount) {
-                    console.warn('カード数不一致検出、再生成中...');
-                    prepareDestinationScreen();
-                }
-            }
-        }, 3000);
 
         console.log('✅ ARナビゲーションシステム スクリプト読み込み完了');
     </script>
