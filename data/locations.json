@@ -1,0 +1,371 @@
+{
+  "metadata": {
+    "name": "温泉旅館館内位置データ",
+    "version": "1.0",
+    "lastUpdated": "2024-01-01",
+    "coordinateSystem": "local",
+    "units": "meters",
+    "origin": "エントランス中央"
+  },
+  "floors": {
+    "1": {
+      "name": "1階",
+      "elevation": 0,
+      "description": "エントランス・フロント・レストラン・ロビー"
+    },
+    "2": {
+      "name": "2階", 
+      "elevation": 3.5,
+      "description": "大浴場・温泉・休憩所"
+    },
+    "-1": {
+      "name": "地下1階",
+      "elevation": -3.0,
+      "description": "駐車場・倉庫"
+    }
+  },
+  "destinations": {
+    "entrance": {
+      "id": "entrance",
+      "name": "エントランス",
+      "nameEn": "Entrance",
+      "nameZh": "入口",
+      "nameKo": "입구",
+      "coordinates": { "x": 0, "y": 0, "z": 0 },
+      "floor": 1,
+      "category": "entrance",
+      "icon": "🚪",
+      "description": "旅館メインエントランス",
+      "accessibility": true,
+      "qrCode": "RYOKAN_ENTRANCE_001"
+    },
+    "reception": {
+      "id": "reception",
+      "name": "フロント・受付",
+      "nameEn": "Front Desk・Reception",
+      "nameZh": "前台・接待处",
+      "nameKo": "프런트・접수처",
+      "coordinates": { "x": 10, "y": 5, "z": 0 },
+      "floor": 1,
+      "category": "service",
+      "icon": "🏨",
+      "description": "チェックイン・チェックアウトカウンター",
+      "accessibility": true,
+      "operatingHours": "24時間",
+      "qrCode": "RYOKAN_RECEPTION_002"
+    },
+    "lounge": {
+      "id": "lounge",
+      "name": "ラウンジ・休憩所",
+      "nameEn": "Lounge・Rest Area",
+      "nameZh": "休息室・休息处",
+      "nameKo": "라운지・휴게소",
+      "coordinates": { "x": 15, "y": 10, "z": 0 },
+      "floor": 1,
+      "category": "relaxation",
+      "icon": "🛋️",
+      "description": "お客様用ラウンジスペース",
+      "accessibility": true,
+      "capacity": 20,
+      "amenities": ["WiFi", "充電コンセント", "雑誌", "お茶サービス"],
+      "qrCode": "RYOKAN_LOUNGE_003"
+    },
+    "restaurant": {
+      "id": "restaurant",
+      "name": "レストラン・食事処",
+      "nameEn": "Restaurant・Dining",
+      "nameZh": "餐厅・用餐处",
+      "nameKo": "레스토랑・식당",
+      "coordinates": { "x": 25, "y": 8, "z": 0 },
+      "floor": 1,
+      "category": "dining",
+      "icon": "🍽️",
+      "description": "和食・郷土料理レストラン",
+      "accessibility": true,
+      "capacity": 60,
+      "operatingHours": {
+        "breakfast": "7:00-9:30",
+        "lunch": "11:30-14:00", 
+        "dinner": "17:30-21:00"
+      },
+      "cuisine": ["和食", "郷土料理", "季節料理"],
+      "qrCode": "RYOKAN_RESTAURANT_004"
+    },
+    "shop": {
+      "id": "shop",
+      "name": "売店・お土産",
+      "nameEn": "Shop・Souvenir",
+      "nameZh": "商店・纪念品",
+      "nameKo": "매점・기념품",
+      "coordinates": { "x": 8, "y": 15, "z": 0 },
+      "floor": 1,
+      "category": "shopping",
+      "icon": "🛍️",
+      "description": "地域特産品・お土産販売",
+      "accessibility": true,
+      "operatingHours": "8:00-22:00",
+      "products": ["地酒", "銘菓", "工芸品", "温泉グッズ"],
+      "qrCode": "RYOKAN_SHOP_005"
+    },
+    "elevator_1f": {
+      "id": "elevator_1f",
+      "name": "エレベーター（1階）",
+      "nameEn": "Elevator (1F)",
+      "nameZh": "电梯（1楼）",
+      "nameKo": "엘리베이터 (1층)",
+      "coordinates": { "x": 20, "y": 2, "z": 0 },
+      "floor": 1,
+      "category": "navigation",
+      "icon": "🛗",
+      "description": "各階アクセス用エレベーター",
+      "accessibility": true,
+      "floors": ["-1", "1", "2"],
+      "capacity": 8,
+      "qrCode": "RYOKAN_ELEVATOR_1F_006"
+    },
+    "stairs_1f": {
+      "id": "stairs_1f", 
+      "name": "階段（1階）",
+      "nameEn": "Stairs (1F)",
+      "nameZh": "楼梯（1楼）",
+      "nameKo": "계단 (1층)",
+      "coordinates": { "x": 22, "y": 2, "z": 0 },
+      "floor": 1,
+      "category": "navigation",
+      "icon": "🚶",
+      "description": "2階への階段",
+      "accessibility": false,
+      "connects": ["1", "2"],
+      "qrCode": "RYOKAN_STAIRS_1F_007"
+    },
+    "toilet_1f": {
+      "id": "toilet_1f",
+      "name": "お手洗い（1階）",
+      "nameEn": "Restroom (1F)",
+      "nameZh": "洗手间（1楼）",
+      "nameKo": "화장실 (1층)",
+      "coordinates": { "x": 12, "y": 18, "z": 0 },
+      "floor": 1,
+      "category": "facility",
+      "icon": "🚻",
+      "description": "1階お手洗い",
+      "accessibility": true,
+      "facilities": ["男性用", "女性用", "多目的トイレ", "ベビーシート"],
+      "qrCode": "RYOKAN_TOILET_1F_008"
+    },
+    "elevator_2f": {
+      "id": "elevator_2f",
+      "name": "エレベーター（2階）",
+      "nameEn": "Elevator (2F)",
+      "nameZh": "电梯（2楼）", 
+      "nameKo": "엘리베이터 (2층)",
+      "coordinates": { "x": 20, "y": 2, "z": 3.5 },
+      "floor": 2,
+      "category": "navigation",
+      "icon": "🛗",
+      "description": "各階アクセス用エレベーター",
+      "accessibility": true,
+      "floors": ["-1", "1", "2"],
+      "capacity": 8,
+      "qrCode": "RYOKAN_ELEVATOR_2F_009"
+    },
+    "stairs_2f": {
+      "id": "stairs_2f",
+      "name": "階段（2階）",
+      "nameEn": "Stairs (2F)",
+      "nameZh": "楼梯（2楼）",
+      "nameKo": "계단 (2층)",
+      "coordinates": { "x": 22, "y": 2, "z": 3.5 },
+      "floor": 2,
+      "category": "navigation", 
+      "icon": "🚶",
+      "description": "1階への階段",
+      "accessibility": false,
+      "connects": ["1", "2"],
+      "qrCode": "RYOKAN_STAIRS_2F_010"
+    },
+    "onsen_entrance": {
+      "id": "onsen_entrance",
+      "name": "大浴場入口",
+      "nameEn": "Public Bath Entrance",
+      "nameZh": "大浴场入口",
+      "nameKo": "대욕장 입구",
+      "coordinates": { "x": 30, "y": 10, "z": 3.5 },
+      "floor": 2,
+      "category": "facility",
+      "icon": "♨️",
+      "description": "温泉大浴場入口・受付",
+      "accessibility": true,
+      "operatingHours": {
+        "morning": "6:00-10:00",
+        "evening": "15:00-24:00"
+      },
+      "qrCode": "RYOKAN_ONSEN_ENT_011"
+    },
+    "onsen_men": {
+      "id": "onsen_men",
+      "name": "男湯",
+      "nameEn": "Men's Bath",
+      "nameZh": "男汤",
+      "nameKo": "남탕",
+      "coordinates": { "x": 35, "y": 8, "z": 3.5 },
+      "floor": 2,
+      "category": "facility",
+      "icon": "♂️",
+      "description": "男性用温泉大浴場",
+      "accessibility": false,
+      "features": ["内湯", "露天風呂", "サウナ", "水風呂"],
+      "temperature": "40-42℃",
+      "qrCode": "RYOKAN_ONSEN_MEN_012"
+    },
+    "onsen_women": {
+      "id": "onsen_women",
+      "name": "女湯", 
+      "nameEn": "Women's Bath",
+      "nameZh": "女汤",
+      "nameKo": "여탕",
+      "coordinates": { "x": 35, "y": 12, "z": 3.5 },
+      "floor": 2,
+      "category": "facility",
+      "icon": "♀️",
+      "description": "女性用温泉大浴場",
+      "accessibility": false,
+      "features": ["内湯", "露天風呂", "美肌湯", "ジャグジー"],
+      "temperature": "39-41℃",
+      "qrCode": "RYOKAN_ONSEN_WOMEN_013"
+    },
+    "toilet_2f": {
+      "id": "toilet_2f",
+      "name": "お手洗い（2階）",
+      "nameEn": "Restroom (2F)",
+      "nameZh": "洗手间（2楼）",
+      "nameKo": "화장실 (2층)",
+      "coordinates": { "x": 12, "y": 18, "z": 3.5 },
+      "floor": 2,
+      "category": "facility",
+      "icon": "🚻",
+      "description": "2階お手洗い",
+      "accessibility": true,
+      "facilities": ["男性用", "女性用", "多目的トイレ"],
+      "qrCode": "RYOKAN_TOILET_2F_014"
+    },
+    "rest_area": {
+      "id": "rest_area",
+      "name": "休憩所（2階）",
+      "nameEn": "Rest Area (2F)",
+      "nameZh": "休息处（2楼）",
+      "nameKo": "휴게소 (2층)",
+      "coordinates": { "x": 18, "y": 15, "z": 3.5 },
+      "floor": 2,
+      "category": "relaxation",
+      "icon": "🛋️",
+      "description": "温泉利用後の休憩スペース",
+      "accessibility": true,
+      "amenities": ["マッサージチェア", "自販機", "テレビ", "雑誌"],
+      "capacity": 15,
+      "qrCode": "RYOKAN_REST_2F_015"
+    },
+    "parking_entrance": {
+      "id": "parking_entrance",
+      "name": "駐車場入口",
+      "nameEn": "Parking Entrance",
+      "nameZh": "停车场入口",
+      "nameKo": "주차장 입구",
+      "coordinates": { "x": 5, "y": -10, "z": -3 },
+      "floor": -1,
+      "category": "parking",
+      "icon": "🚗",
+      "description": "地下駐車場入口",
+      "accessibility": true,
+      "qrCode": "RYOKAN_PARKING_ENT_016"
+    },
+    "parking_area": {
+      "id": "parking_area",
+      "name": "駐車場",
+      "nameEn": "Parking Area",
+      "nameZh": "停车场",
+      "nameKo": "주차장",
+      "coordinates": { "x": 0, "y": -20, "z": -3 },
+      "floor": -1,
+      "category": "parking",
+      "icon": "🅿️",
+      "description": "地下駐車場メインエリア",
+      "accessibility": true,
+      "capacity": 50,
+      "features": ["24時間利用可", "セキュリティカメラ", "EV充電スタンド"],
+      "rates": "宿泊者無料",
+      "qrCode": "RYOKAN_PARKING_017"
+    }
+  },
+  "waypoints": [
+    {
+      "id": "wp_1f_corridor_1",
+      "coordinates": { "x": 5, "y": 5, "z": 0 },
+      "floor": 1,
+      "type": "corridor",
+      "description": "1階廊下（エントランス-フロント間）"
+    },
+    {
+      "id": "wp_1f_corridor_2", 
+      "coordinates": { "x": 15, "y": 5, "z": 0 },
+      "floor": 1,
+      "type": "corridor",
+      "description": "1階廊下（フロント-レストラン間）"
+    },
+    {
+      "id": "wp_2f_corridor_1",
+      "coordinates": { "x": 25, "y": 5, "z": 3.5 },
+      "floor": 2,
+      "type": "corridor", 
+      "description": "2階廊下（エレベーター-大浴場間）"
+    },
+    {
+      "id": "wp_elevator_lobby",
+      "coordinates": { "x": 20, "y": 5, "z": 0 },
+      "floor": 1,
+      "type": "junction",
+      "description": "エレベーターホール"
+    }
+  ],
+  "routes": {
+    "entrance_to_reception": {
+      "start": "entrance",
+      "end": "reception", 
+      "waypoints": ["wp_1f_corridor_1"],
+      "distance": 11.18,
+      "estimatedTime": 1,
+      "difficulty": "easy",
+      "accessibility": true
+    },
+    "reception_to_onsen": {
+      "start": "reception",
+      "end": "onsen_entrance",
+      "waypoints": ["wp_elevator_lobby", "elevator_1f", "elevator_2f", "wp_2f_corridor_1"],
+      "distance": 25.5,
+      "estimatedTime": 4,
+      "difficulty": "medium",
+      "accessibility": true,
+      "instructions": ["エレベーターで2階へ", "右に曲がって直進"]
+    }
+  },
+  "qrCodes": {
+    "RYOKAN_ENTRANCE_001": {
+      "location": "entrance",
+      "position": "wall",
+      "language": ["ja", "en", "zh", "ko"],
+      "content": "温泉旅館エントランス - floor:1"
+    },
+    "RYOKAN_RECEPTION_002": {
+      "location": "reception", 
+      "position": "counter",
+      "language": ["ja", "en", "zh", "ko"],
+      "content": "フロント受付 - floor:1"
+    },
+    "RYOKAN_ONSEN_ENT_011": {
+      "location": "onsen_entrance",
+      "position": "entrance",
+      "language": ["ja", "en", "zh", "ko"],
+      "content": "大浴場入口 - floor:2"
+    }
+  }
+}
