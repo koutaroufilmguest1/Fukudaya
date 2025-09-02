@@ -1,27 +1,26 @@
-<!DOCTYPE html>
+Copy<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>長崎県温泉旅館 WebARナビゲーション - 方向修正完全版</title>
+    <title>長崎県温泉旅館 ARナビゲーション - 基本復元版</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar-nft.js"></script>
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            position: relative;
+            font-family: 'Noto Sans JP', Arial, sans-serif;
             overflow: hidden;
         }
 
-        /* メインUI */
+        /* ARシーン全体 */
+        a-scene {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* UI オーバーレイ */
         .ui-overlay {
             position: fixed;
             top: 0;
@@ -29,32 +28,34 @@
             right: 0;
             bottom: 0;
             z-index: 1000;
-            background: rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
+            pointer-events: none;
         }
 
         /* ヘッダー */
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            pointer-events: auto;
         }
 
         .logo {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            color: #333;
         }
 
         .status {
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .status-dot {
@@ -66,138 +67,100 @@
         }
 
         @keyframes pulse {
-            0% { opacity: 1; }
+            0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
-            100% { opacity: 1; }
         }
 
         /* コンパス */
         .compass-container {
             position: absolute;
-            top: 100px;
+            top: 80px;
             right: 20px;
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.95);
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            border: 3px solid #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
         }
 
         .compass {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             position: relative;
             border-radius: 50%;
-            background: radial-gradient(circle, #fff 0%, #f0f0f0 100%);
+            background: white;
+            border: 2px solid #ddd;
         }
 
         .compass-needle {
             position: absolute;
-            top: 10px;
+            top: 10%;
             left: 50%;
-            width: 3px;
-            height: 35px;
-            background: linear-gradient(180deg, #ff4444 0%, #ff4444 60%, #333 60%, #333 100%);
+            width: 2px;
+            height: 35%;
+            background: linear-gradient(180deg, #ff4444 0%, #ff4444 50%, #333 50%, #333 100%);
             transform-origin: bottom center;
             transform: translateX(-50%) rotate(0deg);
-            border-radius: 2px;
-            transition: transform 0.5s ease-out;
+            transition: transform 0.3s ease;
         }
 
         .compass-center {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: #333;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10;
         }
 
-        .compass-labels {
+        .north-label {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        .compass-label {
-            position: absolute;
-            font-size: 14px;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
             font-weight: bold;
-            color: #333;
-        }
-
-        .compass-label.north {
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
             color: #ff4444;
-            font-size: 16px;
-        }
-
-        .compass-label.east {
-            top: 50%;
-            right: 8px;
-            transform: translateY(-50%);
-        }
-
-        .compass-label.south {
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .compass-label.west {
-            top: 50%;
-            left: 8px;
-            transform: translateY(-50%);
         }
 
         /* 方向矢印 */
         .direction-arrow {
             position: absolute;
-            top: 280px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 68, 68, 0.9);
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 68, 68, 0.8);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 32px;
+            font-size: 24px;
             font-weight: bold;
-            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
-            transition: all 0.5s ease-out;
+            transition: transform 0.3s ease;
+            pointer-events: auto;
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
         }
 
-        .direction-arrow::before {
-            content: '↑';
-            transform: rotate(0deg);
-            transition: transform 0.5s ease-out;
-        }
-
-        /* 目的地選択 */
+        /* 目的地選択パネル */
         .destination-panel {
             position: absolute;
             bottom: 20px;
             left: 20px;
             right: 20px;
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
+            border-radius: 10px;
             padding: 20px;
-            max-height: 250px;
+            pointer-events: auto;
+            max-height: 200px;
             overflow-y: auto;
         }
 
@@ -208,76 +171,51 @@
             color: #333;
         }
 
-        .destination-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
         .destination-item {
+            display: block;
+            width: 100%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 20px;
-            border-radius: 10px;
-            font-size: 15px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
 
         .destination-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .destination-item.active {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .destination-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .destination-distance {
-            font-size: 12px;
-            opacity: 0.9;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
         }
 
         /* デバッグ情報 */
         .debug-info {
             position: absolute;
-            top: 100px;
+            top: 200px;
             left: 20px;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.8);
             color: #00ff00;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 5px;
             font-size: 12px;
-            font-family: 'Courier New', monospace;
-            max-width: 250px;
+            font-family: monospace;
+            pointer-events: auto;
             display: none;
-            border: 1px solid #00ff00;
         }
 
         .debug-info.show {
             display: block;
         }
 
-        .debug-row {
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* 校正モーダル */
-        .calibration-modal {
+        /* 権限要求モーダル */
+        .permission-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -288,32 +226,32 @@
             align-items: center;
             justify-content: center;
             z-index: 2000;
+            pointer-events: auto;
         }
 
-        .calibration-content {
+        .permission-content {
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 30px;
             max-width: 350px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .calibration-title {
-            font-size: 22px;
+        .permission-title {
+            font-size: 20px;
             font-weight: bold;
             margin-bottom: 15px;
             color: #333;
         }
 
-        .calibration-description {
+        .permission-text {
             font-size: 14px;
             color: #666;
             margin-bottom: 25px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
-        .calibration-button {
+        .permission-button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -321,58 +259,55 @@
             border-radius: 25px;
             font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
             margin: 5px;
-            min-width: 120px;
+            transition: all 0.3s ease;
         }
 
-        .calibration-button:hover {
+        .permission-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .calibration-button.skip {
-            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-        }
-
-        /* レスポンシブ */
-        @media (max-width: 480px) {
-            .compass-container {
-                width: 100px;
-                height: 100px;
-                top: 80px;
-                right: 15px;
-            }
-
-            .compass {
-                width: 80px;
-                height: 80px;
-            }
-
-            .direction-arrow {
-                width: 70px;
-                height: 70px;
-                font-size: 28px;
-                top: 240px;
-            }
-
-            .destination-panel {
-                bottom: 15px;
-                left: 15px;
-                right: 15px;
-                padding: 15px;
-            }
-
-            .debug-info {
-                left: 15px;
-                font-size: 11px;
-                padding: 10px;
-                max-width: 200px;
-            }
+        .permission-button.skip {
+            background: #95a5a6;
         }
     </style>
 </head>
 <body>
+    <!-- A-Frame AR シーン -->
+    <a-scene
+        embedded
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+        vr-mode-ui="enabled: false"
+        device-orientation-permission-ui="enabled: false">
+        
+        <!-- カメラ -->
+        <a-camera 
+            gps-camera 
+            rotation-reader
+            look-controls-enabled="false"
+            arjs-look-controls="smoothingFactor: 0.1">
+        </a-camera>
+        
+        <!-- 3D方向矢印（AR空間内） -->
+        <a-entity id="directionEntity" position="0 0 -5" visible="false">
+            <a-cone 
+                position="0 0 0" 
+                radius-bottom="0.5" 
+                radius-top="0" 
+                height="2" 
+                color="#ff4444" 
+                rotation="0 0 0">
+            </a-cone>
+            <a-cylinder 
+                position="0 -1.5 0" 
+                radius="0.2" 
+                height="1" 
+                color="#333">
+            </a-cylinder>
+        </a-entity>
+    </a-scene>
+
     <!-- UI オーバーレイ -->
     <div class="ui-overlay">
         <!-- ヘッダー -->
@@ -389,179 +324,106 @@
             <div class="compass">
                 <div class="compass-needle" id="compassNeedle"></div>
                 <div class="compass-center"></div>
-                <div class="compass-labels">
-                    <div class="compass-label north">N</div>
-                    <div class="compass-label east">E</div>
-                    <div class="compass-label south">S</div>
-                    <div class="compass-label west">W</div>
-                </div>
+                <div class="north-label">N</div>
             </div>
         </div>
 
-        <!-- 方向矢印 -->
-        <div class="direction-arrow" id="directionArrow"></div>
+        <!-- 2D方向矢印 -->
+        <div class="direction-arrow" id="directionArrow">↑</div>
 
-        <!-- 目的地選択パネル -->
+        <!-- 目的地選択 -->
         <div class="destination-panel">
-            <div class="destination-title">📍 目的地を選択してください</div>
-            <div class="destination-list">
-                <button class="destination-item" data-destination="lobby">
-                    <div class="destination-info">
-                        <span>🛋️ ロビー</span>
-                    </div>
-                    <div class="destination-distance">北へ20m</div>
-                </button>
-                <button class="destination-item" data-destination="onsen">
-                    <div class="destination-info">
-                        <span>♨️ 温泉大浴場</span>
-                    </div>
-                    <div class="destination-distance">北へ40m</div>
-                </button>
-                <button class="destination-item" data-destination="restaurant">
-                    <div class="destination-info">
-                        <span>🍽️ レストラン</span>
-                    </div>
-                    <div class="destination-distance">北東へ40m</div>
-                </button>
-                <button class="destination-item" data-destination="elevator">
-                    <div class="destination-info">
-                        <span>🚪 エレベーター</span>
-                    </div>
-                    <div class="destination-distance">北西へ15m</div>
-                </button>
-            </div>
+            <div class="destination-title">📍 目的地を選択</div>
+            <button class="destination-item" data-destination="lobby">
+                🛋️ ロビー（北へ20m）
+            </button>
+            <button class="destination-item" data-destination="onsen">
+                ♨️ 温泉大浴場（北へ40m）
+            </button>
+            <button class="destination-item" data-destination="restaurant">
+                🍽️ レストラン（北東へ40m）
+            </button>
+            <button class="destination-item" data-destination="elevator">
+                🚪 エレベーター（北西へ15m）
+            </button>
         </div>
 
         <!-- デバッグ情報 -->
         <div class="debug-info" id="debugInfo">
-            <div style="color: #ffff00; margin-bottom: 10px; font-weight: bold;">長崎県ARナビ デバッグ</div>
-            <div class="debug-row">
-                <span>生センサー値:</span>
-                <span id="rawHeading">---°</span>
-            </div>
-            <div class="debug-row">
-                <span>磁気偏差補正:</span>
-                <span id="correctedHeading">---°</span>
-            </div>
-            <div class="debug-row">
-                <span>長崎県偏差:</span>
-                <span>-6.9°</span>
-            </div>
-            <div class="debug-row">
-                <span>コンパス角度:</span>
-                <span id="compassAngle">---°</span>
-            </div>
-            <div class="debug-row">
-                <span>目的地角度:</span>
-                <span id="targetAngle">---°</span>
-            </div>
-            <div class="debug-row">
-                <span>矢印角度:</span>
-                <span id="arrowAngle">---°</span>
-            </div>
-            <div class="debug-row">
-                <span>精度:</span>
-                <span id="accuracyStatus">待機中</span>
-            </div>
-            <div class="debug-row">
-                <span>選択目的地:</span>
-                <span id="selectedTarget">なし</span>
-            </div>
+            <div>方位角: <span id="headingValue">---</span>°</div>
+            <div>補正後: <span id="correctedValue">---</span>°</div>
+            <div>長崎県偏差: -6.9°</div>
+            <div>目的地: <span id="targetValue">未選択</span></div>
+            <div>システム: <span id="systemStatus">準備中</span></div>
         </div>
     </div>
 
-    <!-- 校正モーダル -->
-    <div class="calibration-modal" id="calibrationModal">
-        <div class="calibration-content">
-            <div class="calibration-title">🧭 コンパス初期化</div>
-            <div class="calibration-description">
-                正確な方向案内のため、<br>
-                デバイスのセンサーを有効化します。<br><br>
-                <strong>※ 権限許可が必要です</strong>
+    <!-- 権限要求モーダル -->
+    <div class="permission-modal" id="permissionModal">
+        <div class="permission-content">
+            <div class="permission-title">🧭 センサー使用許可</div>
+            <div class="permission-text">
+                正確なナビゲーションのため、<br>
+                デバイスの方向センサーの<br>
+                使用を許可してください。
             </div>
-            <button class="calibration-button" onclick="initializeSystem()">
-                🚀 開始する
+            <button class="permission-button" onclick="requestPermissions()">
+                許可する
             </button>
-            <button class="calibration-button skip" onclick="skipInitialization()">
-                ⏭️ スキップ
+            <button class="permission-button skip" onclick="skipPermissions()">
+                スキップ
             </button>
         </div>
     </div>
 
     <script>
         // ===========================================
-        // 長崎県温泉旅館 ARナビゲーション システム
-        // 方向計算完全修正版
+        // 長崎県温泉旅館 ARナビゲーション
+        // 基本機能復元版
         // ===========================================
 
         // グローバル変数
-        let rawHeading = 0;              // 生のセンサー値
-        let correctedHeading = 0;        // 磁気偏差補正済み
-        let compassDisplayAngle = 0;     // コンパス表示角度
-        let selectedDestination = null;  // 選択された目的地
-        let isSystemReady = false;       // システム準備状態
-        let debugMode = false;           // デバッグモード
+        let currentHeading = 0;
+        let correctedHeading = 0;
+        let selectedDestination = null;
+        let isSystemReady = false;
+        let debugMode = false;
 
-        // 長崎県の磁気偏差値（2024年基準）
-        const NAGASAKI_MAGNETIC_DECLINATION = -6.9;
+        // 長崎県磁気偏差
+        const MAGNETIC_DECLINATION = -6.9;
 
-        // 目的地定義（エントランスからの真方位角）
+        // 目的地定義
         const destinations = {
-            lobby: { 
-                angle: 0,          // 真北 = 0度
-                distance: 20, 
-                name: 'ロビー',
-                description: '北へ20m'
-            },
-            onsen: { 
-                angle: 0,          // 真北 = 0度
-                distance: 40, 
-                name: '温泉大浴場',
-                description: '北へ40m'
-            },
-            restaurant: { 
-                angle: 45,         // 北東 = 45度
-                distance: 40, 
-                name: 'レストラン',
-                description: '北東へ40m'
-            },
-            elevator: { 
-                angle: 315,        // 北西 = 315度
-                distance: 15, 
-                name: 'エレベーター',
-                description: '北西へ15m'
-            }
+            lobby: { angle: 0, distance: 20, name: 'ロビー' },
+            onsen: { angle: 0, distance: 40, name: '温泉大浴場' },
+            restaurant: { angle: 45, distance: 40, name: 'レストラン' },
+            elevator: { angle: 315, distance: 15, name: 'エレベーター' }
         };
 
-        // DOM要素参照
+        // DOM要素
         const statusText = document.getElementById('statusText');
         const compassNeedle = document.getElementById('compassNeedle');
         const directionArrow = document.getElementById('directionArrow');
         const debugInfo = document.getElementById('debugInfo');
-        const calibrationModal = document.getElementById('calibrationModal');
+        const permissionModal = document.getElementById('permissionModal');
+        const directionEntity = document.querySelector('#directionEntity');
 
         // ===========================================
-        // 初期化処理
+        // 初期化
         // ===========================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏨 長崎県温泉旅館 ARナビゲーション システム開始');
+            console.log('🏨 ARナビゲーション 基本版 開始');
             
-            setupEventListeners();
-            showInitializationModal();
+            setupUI();
+            showPermissionModal();
         });
 
-        function setupEventListeners() {
-            // デバッグモード切り替え（ロゴを3回タップ）
-            let logoTapCount = 0;
+        function setupUI() {
+            // デバッグモード切替（ロゴクリック）
             document.querySelector('.logo').addEventListener('click', function() {
-                logoTapCount++;
-                setTimeout(() => logoTapCount = 0, 1500);
-                if (logoTapCount === 3) {
-                    debugMode = !debugMode;
-                    debugInfo.classList.toggle('show', debugMode);
-                    console.log('🔧 デバッグモード:', debugMode ? 'ON' : 'OFF');
-                    statusText.textContent = debugMode ? 'デバッグモード ON' : 'ナビゲーション準備完了';
-                }
+                debugMode = !debugMode;
+                debugInfo.classList.toggle('show', debugMode);
+                console.log('デバッグモード:', debugMode);
             });
 
             // 目的地選択
@@ -572,185 +434,171 @@
             });
         }
 
-        function showInitializationModal() {
-            calibrationModal.style.display = 'flex';
+        function showPermissionModal() {
+            // 2秒後にモーダル表示
+            setTimeout(() => {
+                permissionModal.style.display = 'flex';
+            }, 2000);
         }
 
         // ===========================================
-        // システム初期化
+        // 権限要求
         // ===========================================
-        async function initializeSystem() {
+        async function requestPermissions() {
             try {
-                statusText.textContent = 'センサー初期化中...';
-                calibrationModal.style.display = 'none';
-                
-                // 権限要求とセンサー開始
-                await requestSensorPermissions();
-                startOrientationTracking();
-                
-                isSystemReady = true;
-                statusText.textContent = 'ナビゲーション準備完了';
-                console.log('✅ システム初期化完了');
-                
-            } catch (error) {
-                console.error('❌ システム初期化エラー:', error);
-                statusText.textContent = 'エラー - 基本モード';
-                startFallbackMode();
-            }
-        }
+                statusText.textContent = '権限要求中...';
+                permissionModal.style.display = 'none';
 
-        function skipInitialization() {
-            calibrationModal.style.display = 'none';
-            statusText.textContent = '基本モード（センサーなし）';
-            startFallbackMode();
-        }
-
-        async function requestSensorPermissions() {
-            // iOS 13以降の権限要求
-            if (typeof DeviceOrientationEvent !== 'undefined' && 
-                typeof DeviceOrientationEvent.requestPermission === 'function') {
-                
-                const permission = await DeviceOrientationEvent.requestPermission();
-                if (permission !== 'granted') {
-                    throw new Error('デバイス方向権限が拒否されました');
+                // iOS権限要求
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    const permission = await DeviceOrientationEvent.requestPermission();
+                    if (permission === 'granted') {
+                        startSystem();
+                    } else {
+                        throw new Error('権限が拒否されました');
+                    }
+                } else {
+                    // Android等
+                    startSystem();
                 }
-                console.log('✅ iOS デバイス方向権限: 許可');
-            } else {
-                console.log('✅ Android または古いiOS - 権限要求不要');
+            } catch (error) {
+                console.error('権限エラー:', error);
+                statusText.textContent = 'エラー - 基本モード';
+                startBasicMode();
             }
+        }
+
+        function skipPermissions() {
+            permissionModal.style.display = 'none';
+            statusText.textContent = '基本モード';
+            startBasicMode();
         }
 
         // ===========================================
-        // 方向センサー処理（完全修正版）
+        // システム開始
         // ===========================================
-        function startOrientationTracking() {
-            console.log('🧭 方向追跡開始');
+        function startSystem() {
+            console.log('✅ システム開始');
+            statusText.textContent = 'ナビゲーション準備完了';
+            isSystemReady = true;
+
+            // 方向センサー開始
+            window.addEventListener('deviceorientation', handleOrientation, true);
             
-            // デバイス方向イベント
-            window.addEventListener('deviceorientation', handleDeviceOrientation, true);
-            
-            // 定期更新（フォールバック）
-            setInterval(updateAllDisplays, 200);
+            // 定期更新
+            setInterval(updateDisplay, 200);
         }
 
-        function handleDeviceOrientation(event) {
-            if (event.alpha === null) {
-                console.warn('⚠️ 方向センサーデータなし');
-                return;
-            }
+        function startBasicMode() {
+            console.log('🔄 基本モード開始');
+            isSystemReady = false;
 
-            // センサー値の正規化
-            if (event.webkitCompassHeading !== undefined) {
-                // iOS: webkitCompassHeading を使用（磁気北基準）
-                rawHeading = event.webkitCompassHeading;
-            } else if (event.alpha !== null) {
-                // Android: alpha値を磁気北基準に変換
-                rawHeading = (360 - event.alpha) % 360;
-            } else {
-                return;
-            }
-
-            // 長崎県磁気偏差補正を適用
-            correctedHeading = (rawHeading + NAGASAKI_MAGNETIC_DECLINATION + 360) % 360;
-            
-            // コンパス表示角度（北を上に固定するため反転）
-            compassDisplayAngle = (360 - correctedHeading) % 360;
-            
-            updateAllDisplays();
-        }
-
-        function startFallbackMode() {
-            console.log('🔄 フォールバックモード開始');
-            
-            // デモ用の方向更新
-            let demoHeading = 0;
+            // デモ用回転
+            let angle = 0;
             setInterval(() => {
-                demoHeading = (demoHeading + 2) % 360;
-                rawHeading = demoHeading;
-                correctedHeading = (demoHeading + NAGASAKI_MAGNETIC_DECLINATION + 360) % 360;
-                compassDisplayAngle = (360 - correctedHeading) % 360;
-                updateAllDisplays();
-            }, 1000);
+                angle = (angle + 1) % 360;
+                currentHeading = angle;
+                correctedHeading = (angle + MAGNETIC_DECLINATION + 360) % 360;
+                updateDisplay();
+            }, 100);
         }
 
         // ===========================================
-        // 表示更新処理
+        // センサー処理
         // ===========================================
-        function updateAllDisplays() {
-            updateCompassDisplay();
-            updateDirectionArrow();
+        function handleOrientation(event) {
+            if (event.alpha === null) return;
+
+            // 方位角取得
+            if (event.webkitCompassHeading !== undefined) {
+                // iOS
+                currentHeading = event.webkitCompassHeading;
+            } else {
+                // Android
+                currentHeading = (360 - event.alpha) % 360;
+            }
+
+            // 磁気偏差補正
+            correctedHeading = (currentHeading + MAGNETIC_DECLINATION + 360) % 360;
+            
+            updateDisplay();
+        }
+
+        // ===========================================
+        // 表示更新
+        // ===========================================
+        function updateDisplay() {
+            updateCompass();
+            updateArrow();
             updateDebugInfo();
         }
 
-        function updateCompassDisplay() {
-            if (compassNeedle) {
-                // コンパス針を正確な北方向に向ける
-                compassNeedle.style.transform = `translateX(-50%) rotate(${compassDisplayAngle}deg)`;
-            }
+        function updateCompass() {
+            // コンパス針を北に向ける
+            const needleAngle = (360 - correctedHeading) % 360;
+            compassNeedle.style.transform = `translateX(-50%) rotate(${needleAngle}deg)`;
         }
 
-        function updateDirectionArrow() {
-            if (!selectedDestination || !directionArrow) return;
-            
+        function updateArrow() {
+            if (!selectedDestination) return;
+
             const destination = destinations[selectedDestination];
             if (!destination) return;
-            
-            // 目的地への相対角度計算
-            const targetBearing = destination.angle;  // 目的地の真方位
-            const relativeBearing = (targetBearing - correctedHeading + 360) % 360;
-            
-            // 矢印の回転（上矢印↑を基準）
-            directionArrow.style.transform = `translateX(-50%) rotate(${relativeBearing}deg)`;
-            
+
+            // 目的地への角度計算
+            const targetAngle = destination.angle;
+            const relativeAngle = (targetAngle - correctedHeading + 360) % 360;
+
+            // 2D矢印回転
+            directionArrow.style.transform = `translate(-50%, -50%) rotate(${relativeAngle}deg)`;
+
+            // 3D矢印回転（AR空間）
+            if (directionEntity) {
+                directionEntity.setAttribute('rotation', `0 ${relativeAngle} 0`);
+                directionEntity.setAttribute('visible', 'true');
+            }
+
             // 距離による色変更
             updateArrowColor(destination.distance);
-            
-            if (debugMode) {
-                document.getElementById('targetAngle').textContent = `${targetBearing}°`;
-                document.getElementById('arrowAngle').textContent = `${Math.round(relativeBearing)}°`;
-            }
         }
 
         function updateArrowColor(distance) {
+            let color;
             if (distance <= 20) {
-                directionArrow.style.background = 'rgba(76, 175, 80, 0.9)'; // 緑（近い）
+                color = 'rgba(76, 175, 80, 0.8)'; // 緑
             } else if (distance <= 30) {
-                directionArrow.style.background = 'rgba(255, 193, 7, 0.9)';  // 黄（中間）
+                color = 'rgba(255, 193, 7, 0.8)';  // 黄
             } else {
-                directionArrow.style.background = 'rgba(255, 68, 68, 0.9)';  // 赤（遠い）
+                color = 'rgba(255, 68, 68, 0.8)';  // 赤
             }
+            directionArrow.style.background = color;
         }
 
         function updateDebugInfo() {
             if (!debugMode) return;
-            
-            document.getElementById('rawHeading').textContent = `${Math.round(rawHeading)}°`;
-            document.getElementById('correctedHeading').textContent = `${Math.round(correctedHeading)}°`;
-            document.getElementById('compassAngle').textContent = `${Math.round(compassDisplayAngle)}°`;
-            document.getElementById('accuracyStatus').textContent = isSystemReady ? '動作中' : '準備中';
-            document.getElementById('selectedTarget').textContent = selectedDestination ? destinations[selectedDestination].name : 'なし';
+
+            document.getElementById('headingValue').textContent = Math.round(currentHeading);
+            document.getElementById('correctedValue').textContent = Math.round(correctedHeading);
+            document.getElementById('targetValue').textContent = selectedDestination ? destinations[selectedDestination].name : '未選択';
+            document.getElementById('systemStatus').textContent = isSystemReady ? '動作中' : '基本モード';
         }
 
         // ===========================================
-        // 目的地選択処理
+        // 目的地選択
         // ===========================================
-        function selectDestination(destinationKey) {
-            // 前の選択をクリア
+        function selectDestination(key) {
+            // アクティブ状態更新
             document.querySelectorAll('.destination-item').forEach(item => {
                 item.classList.remove('active');
             });
             
-            // 新しい選択をアクティブに
-            const selectedItem = document.querySelector(`[data-destination="${destinationKey}"]`);
+            const selectedItem = document.querySelector(`[data-destination="${key}"]`);
             if (selectedItem) {
                 selectedItem.classList.add('active');
-                selectedDestination = destinationKey;
+                selectedDestination = key;
                 
-                const destination = destinations[destinationKey];
-                console.log(`🎯 目的地選択: ${destination.name} (${destination.description})`);
-                
-                // 即座に方向更新
-                updateDirectionArrow();
+                console.log('目的地選択:', destinations[key].name);
+                updateArrow();
             }
         }
 
@@ -758,21 +606,16 @@
         // エラーハンドリング
         // ===========================================
         window.addEventListener('error', function(e) {
-            console.error('❌ システムエラー:', e.error);
-            statusText.textContent = 'システムエラー';
+            console.error('システムエラー:', e.error);
+            statusText.textContent = 'エラー発生';
         });
 
-        // 画面向き変更対応
+        // 画面向き変更
         window.addEventListener('orientationchange', function() {
-            setTimeout(() => {
-                console.log('📱 画面向き変更 - 再初期化');
-                updateAllDisplays();
-            }, 1000);
+            setTimeout(updateDisplay, 500);
         });
 
-        console.log('🏨 長崎県温泉旅館 ARナビゲーション - 初期化完了');
-        console.log('📍 エントランス座標: 32.76629645690299, 129.8575246988253');
-        console.log('🧭 長崎県磁気偏差: -6.9°');
+        console.log('🏨 基本版ARナビ 初期化完了');
     </script>
 </body>
 </html>
