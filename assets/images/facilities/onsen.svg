@@ -1,0 +1,50 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="onsenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF7043;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF5722;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D84315;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 湯船 -->
+  <ellipse cx="32" cy="45" rx="25" ry="12" 
+           fill="url(#onsenGradient)" 
+           stroke="#8D6E63" 
+           stroke-width="2"/>
+  
+  <!-- 水面の波 -->
+  <path d="M10 45 Q20 40 30 45 T50 45" 
+        stroke="#FFAB91" 
+        stroke-width="2" 
+        fill="none" 
+        opacity="0.7"/>
+  
+  <!-- 湯気 -->
+  <g opacity="0.6">
+    <path d="M20 35 Q22 25 20 20 Q18 25 20 35" 
+          stroke="#E0E0E0" 
+          stroke-width="3" 
+          fill="none" 
+          stroke-linecap="round">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
+    </path>
+    <path d="M32 35 Q34 22 32 15 Q30 22 32 35" 
+          stroke="#E0E0E0" 
+          stroke-width="3" 
+          fill="none" 
+          stroke-linecap="round">
+      <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2.5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M44 35 Q46 28 44 18 Q42 28 44 35" 
+          stroke="#E0E0E0" 
+          stroke-width="3" 
+          fill="none" 
+          stroke-linecap="round">
+      <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.8s" repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- 温泉マーク -->
+  <text x="32" y="50" text-anchor="middle" font-family="serif" font-size="12" fill="#FFFFFF">♨</text>
+</svg>
